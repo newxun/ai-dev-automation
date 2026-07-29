@@ -38,12 +38,15 @@
 
 ## Contents
 
-- [`SKILL.md`](SKILL.md)：Skill 入口（含触发描述 frontmatter），常驻加载的精简内核——前置检查、身份与上下文解析、三级写操作安全模型、三条工作流的指针。
+- [`SKILL.md`](SKILL.md)：Skill 入口。frontmatter 的 `description` 按"是否在用云效 MCP"触发，不局限于下面三条内置场景；正文是常驻加载的精简内核——前置检查、身份与上下文解析（含 memory 缓存读写协议）、三级写操作安全模型、三条内置工作流的指针。
 - [`reference/dev-context-sync.md`](reference/dev-context-sync.md)：按需加载——开发前同步需求/任务/评论的详细步骤与确认点。
 - [`reference/pipeline-release.md`](reference/pipeline-release.md)：按需加载——发起流水线、排查失败日志、处理发布冲突的详细步骤与确认点。
 - [`reference/task-timesheet.md`](reference/task-timesheet.md)：按需加载——拆分子任务、登记与统计工时的详细步骤与确认点。
+- [`memory/`](memory/)：本地身份/上下文缓存（组织 ID、当前用户 ID、常用项目 ID、字段约定）。`context.example.json` 是提交到 git 的结构模板，真实的 `context.json` 已在仓库 `.gitignore` 中排除，避免把你所在组织的真实 ID 提交进这个公共 Artifact 仓库。
 
 ## 形态说明
+
+Skill 的触发范围是"任何云效 MCP 调用"，而不是把 frontmatter `description` 写死成三条内置场景——身份/上下文解析和写操作安全模型对云效 MCP 的所有使用都适用（哪怕只是临时查一下仓库分支或组织成员），三条 reference 只是目前沉淀出的高频场景，命中时才按需读入，不代表 Skill 只在这三种场景下才应该加载。
 
 三条工作流都是**人在环、可能跨会话**的真实研发场景，且共享同一套身份解析和写操作安全模型，因此组织成一个 **Skill**（而不是三个独立 Skill 或一个 Subagent）：不像 `development-readiness` 那样是顺序推进的三个阶段，而是三个独立入口，按用户当前意图选择读入对应 reference，避免一次性加载全部内容占用上下文。
 
@@ -119,9 +122,11 @@ Agent 不应：
 - `list_current_user_effort_records` 等工时接口存在时间跨度限制（不超过 6 个月），长跨度统计需要分段查询再合并。
 - MCP 只提供明细数据，不提供聚合报表，本地聚合逻辑需要和用户对齐口径，不保证与云效官方统计完全一致。
 - 194 个工具随官方版本可能新增/调整，本 Skill 引用的工具名以 [alibabacloud-devops-mcp-server](https://github.com/aliyun/alibabacloud-devops-mcp-server) README 为准，需要定期核对是否有变化。
+- `memory/context.json` 是纯本地缓存，不同机器/不同 Agent 会话目录之间不会自动同步；换机器或换 Agent 宿主时需要重新触发一次身份解析（Agent 会自动完成，无需手动操作）。
 
 ## Roadmap
 
+- **先用后精简**：`reference/` 下的三份文档目前偏详细，是为了覆盖考虑到的边界情况；按本仓库 `CONTRIBUTING.md` 的原则，在真实跑过几次之后，应该根据实际踩坑（哪些分支从没用到、哪些步骤被证明多余）做一轮精简，而不是一开始就追求完备。
 - 视真实使用情况补充测试管理（Testhub）和制品仓库（Packages）相关的工作流。
-- 收集实际使用中遇到的字段/工作流命名差异，沉淀为可复用的组织级约定清单。
+- 收集实际使用中遇到的字段/工作流命名差异，沉淀为可复用的组织级约定清单，必要时固化进 `memory/context.example.json` 的字段模板里。
 - 若与 `development-readiness` 的任务就绪阶段配合使用产生固定模式，评估是否需要显式的衔接说明或共享模板。

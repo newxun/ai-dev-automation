@@ -17,3 +17,6 @@ venv/
 dist/
 build/
 coverage/
+
+# Skill memory caches: personal/environment-specific IDs, never share via git
+artifacts/skills/yunxiao-devops-workflows/memory/context.json

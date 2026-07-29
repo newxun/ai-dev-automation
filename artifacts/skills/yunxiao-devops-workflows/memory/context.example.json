@@ -1,0 +1,25 @@
+{
+  "organizationId": "",
+  "organizationName": "",
+  "currentUserId": "",
+  "currentUserName": "",
+  "defaultProject": {
+    "spaceId": "",
+    "spaceType": "Project",
+    "name": ""
+  },
+  "otherProjects": [
+    {
+      "alias": "",
+      "spaceId": "",
+      "spaceType": "Project",
+      "name": ""
+    }
+  ],
+  "fieldConventions": {
+    "participantsMeaning": "责任人 | 原生 participants 字段 | 自定义字段:<字段名/ID>",
+    "acceptanceCriteriaField": "",
+    "effortFieldsInUse": "预计工时用 create_estimated_effort | 实际工时用 create_effort_record"
+  },
+  "updatedAt": ""
+}
