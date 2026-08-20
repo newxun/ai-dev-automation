@@ -74,12 +74,23 @@ Diff：
 - AI 对未提供的上下文没有可靠判断能力。
 - AI 生成的评论需要人工筛选，不能直接批量发布。
 
+## Downstream Consumption
+
+[`scenario-acceptance`](../../skills/scenario-acceptance/README.md) Skill 会消费本工作流的输出作为验收阶段「代码质量」证据的一部分。它不要求固定 Schema，但需要能看出：
+
+- 结论来源（谁、以什么方式审查）。
+- 是否存在阻塞问题及具体内容（对应下方 Merge Readiness 小节的「阻塞问题」）。
+- 审查所基于的代码版本（diff 对应的 Commit 或 PR 版本）。
+
+保留这三类信息（哪怕只是 PR 评论或口头小结），场景验收阶段就能直接引用，不需要重新审查；缺失时会被记为证据缺口，按任务风险决定是否阻断验收。
+
 ## Roadmap
 
 - 补充不同类型 PR 的 Review Prompt，例如 bugfix、refactor、migration。
 - 增加安全、性能、测试覆盖专项检查清单。
 - 记录真实 Review 案例和误报案例。
 - 评估不同模型在 Code Review 场景下的表现。
+- 如果本工作流未来演进为结构化 Skill，重新校准与 Scenario Acceptance 的消费接口。
 
 ## Example Output Format
 
