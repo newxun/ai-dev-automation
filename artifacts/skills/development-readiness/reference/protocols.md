@@ -71,8 +71,11 @@
 
 - 基线：`docs/development-readiness/<timestamp>-baseline.md`
 - 任务：`docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`
+- 任务原始资料：`docs/development-readiness/tasks/raw/<timestamp>-<task-id-or-slug>/`（仅在有需要归集的原始资料时创建）
 
 同一会话从开始到结束持续创建/更新这组文件，无需询问，不因阶段推进或修订新建版本。多个任务各一份并回链同一基线，不合并。新会话使用新时间戳，保留旧文件用于 diff。任务无 ID 时使用简短、稳定、文件系统安全的 slug；同名冲突追加短序号。
+
+同一个任务 slug 会在后续 Testing（`docs/testing/tasks/<timestamp>-<task-id-or-slug>.md`）和 Scenario Acceptance（`docs/scenario-acceptance/tasks/<timestamp>-<task-id-or-slug>.md`）阶段被复用，用于在不引入索引文件的前提下让材料链可追溯；本 Skill 不需要预先创建这些下游文件。
 
 基线用 `report-template-base.md`，任务用 `report-template-task.md`。固定模板的核心标题与信息位置；无内容的可选小节可以省略，不保留空表格或堆叠“不适用”。同一事实只写在一个权威位置，其他位置引用。
 
@@ -103,12 +106,12 @@
 - 交接文档：
 
 下一步：
-- 任务状态为 `就绪`：在新的 Coding Agent 会话中读取交接文档并开始实现。
+- 任务状态为 `就绪`：在新的 Coding Agent 会话中读取交接文档并开始实现；实现完成后使用 Testing Skill 产出测试证据，再使用 Scenario Acceptance Skill 完成验收——本 Skill 不承担开发后的完整测试或验收职责。
 - 任务状态为 `有限就绪`：记录允许范围、禁止范围与残余风险；只有用户明确接受后才指示在允许范围内开始。
 - 任务状态为 `未就绪`：先解除列出的阻断，不得开始实现。
 - 任务状态为 `未评估`：补充具体任务后继续 Phase 3。
 
-任何情况下都不要由本 Agent 继续编码。
+任何情况下都不要由本 Agent 继续编码，也不要在本 Skill 内执行开发完成后的功能测试或验收判断。
 ```
 
 若环境或任务状态不是 `就绪`，不得用「准备完成」掩盖阻断：标题改为「开发交接检查点」，明确用户必须先处理什么；任一状态为 `有限就绪` 时记录允许范围、禁止范围、残余风险及用户是否接受。

@@ -10,7 +10,28 @@
 ## 当前 Skill
 
 - `development-readiness/`：让临时接手陌生仓库的开发者，在编码前达到「真实、可验证、可交接」的开发就绪状态（项目熟悉 + 环境验证 + 任务就绪），并产出跨会话交接文档。
+- `testing/`：在开发完成后、场景验收前，对照开发就绪阶段确定的验收标准产出可复现的测试证据（自动化测试 + 按需浏览器功能测试 + 条件化视觉测试）。
+- `scenario-acceptance/`：综合原始需求、项目全局约束、任务契约、代码差异、测试证据与代码 Review 结论，判断最终交付能否验收，并把暴露出的项目事实变化回流给开发就绪阶段。
 - `yunxiao-devops-workflows/`：在已接入的云效（Yunxiao）MCP 之上，规范开发前同步需求/任务/评论、发起流水线与排查失败日志、拆任务与登记统计工时这三条高频协同工作流的取证顺序与写操作确认边界。
+
+### 开发就绪 → 测试 → 场景验收工作流
+
+三个 Skill 共享同一条材料链，覆盖编码前到验收的全过程；开发实现和代码质量 Review 复用已有能力，不在这三个 Skill 中重做：
+
+```text
+development-readiness（开发就绪）
+    ↓
+已有开发能力（Coding Agent）
+    ↓
+testing（测试） ──┐
+                  ├─→ scenario-acceptance（场景验收）
+已有代码 Review ──┘
+```
+
+三者用同一个任务 slug 在各自目录下落盘报告（`docs/development-readiness/`、`docs/testing/`、`docs/scenario-acceptance/`），不引入额外的索引或状态机；设计背景与已决策项见
+[`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md)
+和
+[`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)。
 
 ## 放置规则
 

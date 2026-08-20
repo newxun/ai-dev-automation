@@ -14,7 +14,11 @@
 2. 环境就绪：实际验证依赖、服务、启动、构建和最小测试路径。
 3. 任务就绪：针对具体需求提供修改范围、风险、测试和调试指南。
 
-最终生成自包含交接文档，让新的 Coding Agent 会话可以直接开始实现。
+最终生成自包含交接文档，让新的 Coding Agent 会话可以直接开始实现。实现完成后的测试与验收由
+[`testing`](../testing/README.md) 和 [`scenario-acceptance`](../scenario-acceptance/README.md)
+两个 Skill 承接，三者共享同一条「原始资料 → 项目/任务认知 → 代码差异 → 测试证据 → 验收结论」
+材料链，设计背景见
+[`2026-08-20-readiness-testing-acceptance-handoff.md`](../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md)。
 
 ## Use Cases
 
@@ -24,6 +28,8 @@
 - 不熟悉项目采用的开发、联调或调试方式。
 - 先完成项目准备，之后再获得具体任务。
 - 需要把调查结论交接给另一个开发会话。
+- 同一项目同时存在多个独立任务（进行中、暂停、待测试、待验收、已完成），需要分别管理各自材料。
+- 接手者对当前技术栈或项目不熟悉，甚至是非技术参与者，需要调整交接深度。
 
 ## Not For
 
@@ -41,6 +47,7 @@
 - [`report-template-base.md`](report-template-base.md)：本会话项目与环境基线模板。
 - [`report-template-task.md`](report-template-task.md)：每个任务独立使用的任务就绪模板。
 - [`../../evaluations/development-readiness-scenarios.md`](../../evaluations/development-readiness-scenarios.md)：通用场景化评估用例。
+- [`../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)：开发就绪、测试与场景验收三个 Skill 共享的目录结构、材料链和已决策项。
 
 ## 形态说明
 
@@ -112,6 +119,8 @@ Agent 应：
 - 支持且执行耗时/高噪音或隔离确有收益时，用一个环境验证子 Agent，主 Agent 核验固定摘要；简单低噪音项目直接执行。
 - 每个任务独立确认基准分支；完全无线索时才回退 `origin/HEAD`。
 - 阶段二更新本会话基线，阶段三为每个任务更新独立报告。
+- 支持同一项目并行存在多个独立任务，不用唯一 current task 覆盖其他任务。
+- 了解或保守推定接手者背景，调整交接深度，而不是默认接手者熟悉当前岗位或技术栈。
 
 Agent 不应：
 
@@ -148,8 +157,9 @@ Agent 不应：
 
 - `docs/development-readiness/<timestamp>-baseline.md`
 - `docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`
+- `docs/development-readiness/tasks/raw/<timestamp>-<task-id-or-slug>/`（仅在归集了原始资料时存在）
 
-同一会话持续更新同一组文件，不因阶段推进新建版本；新会话创建新时间戳版本。多个任务各一份文件并共享本会话基线。环境和任务均可判为 `就绪 / 有限就绪 / 未就绪`。
+同一会话持续更新同一组文件，不因阶段推进新建版本；新会话创建新时间戳版本。多个任务各一份文件并共享本会话基线，互不覆盖。环境和任务均可判为 `就绪 / 有限就绪 / 未就绪`。任务 slug 会被 Testing 与 Scenario Acceptance Skill 复用以定位材料。
 
 ## Limitations
 
