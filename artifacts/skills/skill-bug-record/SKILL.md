@@ -1,55 +1,45 @@
 ---
 name: skill-bug-record
-description: 手动调用（不会被模型自动触发）。在执行完某个自定义 skill 后，把发现的、关于该 skill 定义本身的问题追加记录到跨仓库共享的日志文件，供之后用 skill-bug-triage 集中处理。不判断问题要不要修，也不修改任何 skill 文件。
+description: Log an issue found in another skill's own definition (unclear instructions, missing boundaries, missing reference coverage, inaccurate trigger conditions, output mismatch) as a new entry in a shared log file for later triage. Does not judge whether the issue needs fixing and does not modify any skill file.
 disable-model-invocation: true
 ---
 
 # Skill Bug Record
 
-把执行某个 skill 过程中发现的"skill 定义本身的问题"（不是业务代码的 bug、不是环境问题）追加记录到一份固定的日志文件里，为之后的 `skill-bug-triage` 提供处理素材。本 skill 只负责**忠实记录现象**,不判断问题严重与否、要不要改、该怎么改。
+Append one issue about another skill's own definition to a shared log, for `skill-bug-triage` to process later. Only record the facts; never decide whether or how to fix anything.
 
-你**不是** `skill-bug-triage`：不读取历史记录列表、不判断哪些该处理、不修改任何 skill 文件；每次调用只做一件事——把这次遇到的问题追加为一条新记录。
+## What to record
 
-## 只记录这类问题
+- Instructions or boundaries that were unclear and forced guessing during execution
+- A trigger description that misfired (fired when it shouldn't have, or didn't fire when it should have)
+- A scenario not covered by any reference file, resolved with an ad hoc judgment call
+- Output that didn't match what a downstream consumer (user or another skill) expected
+- A hard boundary or confirmation protocol that turned out missing, redundant, or contradictory
 
-- 指令或边界写得不清楚，执行时要靠猜或者跑偏了
-- 触发条件（`description`）没命中该命中的场景，或者命中了不该命中的场景
-- 某个场景 `reference/` 没覆盖到，当场临时判断补的
-- 输出格式与下游消费方（用户、其他 skill）的预期不匹配
-- 硬边界/确认协议在实际场景里显得多余、遗漏或者自相矛盾
+Do not record tool errors, network issues, missing dependencies, or other execution failures unrelated to the skill's own definition.
 
-不记录：单纯的工具报错、网络问题、环境缺依赖等跟 skill 定义本身无关的执行故障。
-
-## 存储位置
-
-固定路径，不挂在任何仓库或当前工作目录上：
+## Log location
 
 ```
 ${XDG_STATE_HOME:-$HOME/.local/state}/skill-bugs/log.md
 ```
 
-文件不存在就创建（包括父目录）；已存在就在文件末尾追加，不改写已有内容。
+Create the file and its parent directory if missing. Append only; never rewrite existing entries.
 
-## 记录格式
-
-每条记录是一个二级标题 + 三行字段，追加在文件末尾：
+## Entry format
 
 ```markdown
-## <UTC 时间戳 YYYY-MM-DDTHH-mm-ssZ> · <skill 名字> · 待处理
+## <UTC timestamp YYYY-MM-DDTHH-mm-ssZ> · <skill name> · pending
 
-- 现象：<做了什么 / 期待什么 / 实际发生了什么，尽量具体到步骤>
-- 归因猜测：<指令不清晰 / 边界遗漏 / reference 缺失 / 触发条件不准 / 输出格式不匹配 / 其他（说明）>
-- 备注：<可选，当时的任务背景或对话线索，方便以后回溯定位>
+- Symptom: <what was done, what was expected, what actually happened>
+- Likely cause: <unclear instructions / missing boundary / missing reference / inaccurate trigger / output mismatch / other (explain)>
+- Note: <optional context to help relocate this later>
 ```
 
-状态固定写在标题里（新记录一律是`待处理`），方便 `skill-bug-triage` 之后按标题状态筛选；不要自己判断改成别的状态。
+New entries always use status `pending`.
 
-## 工作流程
+## Workflow
 
-1. 确认这次要记录的是**哪个 skill**、**具体现象**（不确定就直接问一句，不要编）。
-2. 读取（或创建）日志文件，按上面的格式在文件末尾追加一条新记录，时间戳用当前命令取值，不要凭记忆。
-3. 追加完成后，把刚写入的这条记录原样展示给确认，不额外总结、不评价问题严重程度。
-
-## 回应风格
-
-默认中文；只做记录这一件事，不在这个 skill 里讨论要不要修、怎么修；一次调用只处理一条问题，多条问题分多次调用。
+1. Confirm which skill and what symptom you're recording; ask rather than guessing if either is unclear.
+2. Read (or create) the log file and append one new entry in the format above, using a freshly generated timestamp.
+3. Show the entry you just appended.

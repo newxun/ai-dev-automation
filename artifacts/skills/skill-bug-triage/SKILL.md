@@ -1,41 +1,41 @@
 ---
 name: skill-bug-triage
-description: 手动调用（不会被模型自动触发）。集中处理 skill-bug-record 积累的"待处理"记录——逐条判断要不要修改对应 skill 的定义文件，需要修时定位到具体文件做最小修改，不需要修时写明理由，处理完把每条记录的状态更新为已处理或不予处理。
+description: Review pending entries in the shared skill bug log, decide for each whether the referenced skill's own definition needs a fix, apply the smallest fix when warranted, and write back the resulting status (resolved or dismissed).
 disable-model-invocation: true
 ---
 
 # Skill Bug Triage
 
-读取 `skill-bug-record` 积累在共享日志里的"待处理"记录，逐条判断是否需要修改对应 skill 的定义文件；需要修改时做定位到位的最小修改，不需要修改时写清理由；处理完把该条记录状态更新为已处理或不予处理。
+Read pending entries from the shared skill-bug log, decide for each whether the referenced skill's definition needs a fix, apply the smallest fix when warranted, and write back the resulting status.
 
-你**不是** `skill-bug-record`：不负责发现或追加新问题；也不是通用的代码 Review——只处理日志里已经记下来的、关于 skill 定义本身的问题,不主动去翻某个 skill 找茬。
+## Hard boundaries
 
-## 硬边界
+1. A single log entry does not justify rewriting an entire skill; apply only the smallest fix that addresses the reported symptom.
+2. If a fix would change an existing hard boundary, trigger scope, or established workflow, present the proposed change and wait for confirmation before applying it. Typos, ambiguous wording, or clearly missing boundaries can be fixed directly.
+3. If the referenced skill or file can't be found, or the described scenario no longer applies, mark the entry `dismissed` with a reason instead of guessing at a target file.
+4. Never delete existing entries. Only update the status in the heading and append a resolution.
+5. It's fine to process only some entries (one skill, or specific entries) in a single pass; leave the rest `pending`.
 
-1. 一条 bug 记录不构成大范围重写某个 skill 的理由；只做能定位到具体段落、直接对应记录里现象的最小修改。
-2. 是否要改、改成什么样，如果涉及会改变已生效的硬边界、触发范围或既有工作流程这类实质性设计取舍,先把改动方案讲清楚给你确认,不能自己拍板改完就算。纯粹的错字、指代不清、遗漏边界这类无争议修正可以直接改。
-3. 找不到对应 skill、或者对应文件已经不存在/大幅变化到记录描述的场景已经不适用,标记"不予处理"并说明原因,不能凭空猜测该改哪个文件。
-4. 不删除任何历史记录；只在原记录基础上更新标题里的状态、追加"处理结论"字段，保留可追溯性。
-5. 不必须一次性处理完全部待处理记录；可以只处理你指定的某个 skill 或某几条,其余保持"待处理"不动。
+## Log location
 
-## 记录状态与处理结论
-
-日志里每条记录标题是 `<时间戳> · <skill 名字> · <状态>`,状态三选一：`待处理` / `已处理` / `不予处理`。处理一条记录时,把标题状态改成对应结果,并在原有字段后追加：
-
-```markdown
-- 处理结论：<已处理：改了什么、改在哪个文件；或 不予处理：为什么不改>
-- 处理时间：<UTC 时间戳>
+```
+${XDG_STATE_HOME:-$HOME/.local/state}/skill-bugs/log.md
 ```
 
-## 工作流程
+## Status and resolution
 
-1. **读取待处理清单**：读日志文件（`${XDG_STATE_HOME:-$HOME/.local/state}/skill-bugs/log.md`），筛出状态为`待处理`的记录，按 skill 分组列出来。文件不存在或没有待处理记录时直接说明,不用继续往下走。
-2. **确认这次处理范围**：默认处理全部待处理记录；你可以指定只处理某个 skill 或某几条,一句话说清楚就行。
-3. **逐条判断**：对每条记录，先定位到对应 skill 的源文件（`SKILL.md` 或 `reference/**`），判断记录里的现象对应哪一段、根因是什么，形成"修 / 不修 / 需要先确认"的结论。
-4. **执行修改**：判断需要修且不涉及硬边界第 2 条所说的实质取舍时,直接做最小修改；涉及取舍时先展示改动方案。
-5. **回写状态**：每处理完一条,立即更新该条记录的状态和处理结论,不要攒到最后一次性回写,避免中途中断导致状态和实际改动不一致。
-6. **收尾汇总**：处理完这批后,汇总本次改了哪些 skill、不予处理的有哪些及理由、还剩多少条待处理。
+Each entry's heading is `<timestamp> · <skill name> · <status>`, where status is `pending` / `resolved` / `dismissed`. When closing an entry, update the status and append:
 
-## 回应风格
+```markdown
+- Resolution: <resolved: what changed and in which file; or dismissed: why no fix is needed>
+- Resolved at: <UTC timestamp>
+```
 
-默认中文；先给这批记录的处理结论摘要（改了什么 / 不改什么及理由 / 还剩多少待处理），再给必要的改动细节；涉及设计取舍时把方案和影响讲清楚再等确认，不擅自决定。
+## Workflow
+
+1. Read the log file and list all `pending` entries grouped by skill. If the file is missing or empty, say so and stop.
+2. Confirm scope for this pass (default: all pending entries, or a subset named by the user).
+3. For each entry, locate the relevant file in the referenced skill (`SKILL.md` or `reference/**`), identify the root cause, and decide: fix / dismiss / needs confirmation.
+4. Apply the fix directly when it doesn't fall under boundary 2; otherwise present the plan first.
+5. Update that entry's status and resolution immediately after handling it, rather than batching updates at the end.
+6. Summarize what was fixed, what was dismissed and why, and how many entries remain pending.
