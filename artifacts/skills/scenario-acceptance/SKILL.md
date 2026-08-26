@@ -1,6 +1,7 @@
 ---
 name: scenario-acceptance
 description: Use when 开发和测试已完成，需要综合原始需求、项目全局约束、任务契约、代码差异、测试证据与代码 Review 结论，判断最终交付是否可以验收、是否存在越界修改或全局回归风险。
+disable-model-invocation: true
 ---
 
 # Scenario Acceptance

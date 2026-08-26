@@ -1,6 +1,7 @@
 ---
 name: yunxiao-devops-workflows
 description: Use whenever 对话中出现云效（阿里云 Yunxiao / alibabacloud-devops-mcp-server）MCP 工具调用，或用户提到"云效"/"yunxiao"/相关需求、任务、流水线、发布单、代码仓库、工时——不限于开发前同步/流水线排查/拆任务与工时这三个内置场景，只要在用云效 MCP 就应加载，以复用身份/上下文缓存与写操作安全模型。
+disable-model-invocation: true
 ---
 
 # Yunxiao DevOps Workflows
