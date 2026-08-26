@@ -1,6 +1,7 @@
 ---
 name: development-readiness
 description: Use when 开发者临时接手陌生仓库、需要在编码前确认项目认知、开发环境、任务边界、运行入口与验证路径是否真实可用。
+disable-model-invocation: true
 ---
 
 # Development Readiness

@@ -1,6 +1,7 @@
 ---
 name: testing
 description: Use when 开发已完成、需要在场景验收前对最终代码产出可复现的测试证据——运行自动化测试、按需浏览器功能测试、条件化视觉测试，并标记通过/失败/跳过/需人工确认。
+disable-model-invocation: true
 ---
 
 # Testing
