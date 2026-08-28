@@ -101,4 +101,4 @@
 4. 禁止或暂不修改：
 5. 实现后必须执行：
 6. 开始编码前仍需完成：
-7. 实现完成后，使用 Testing Skill 依据本文件的验收条件与验证矩阵产出测试证据，再使用 Scenario Acceptance Skill 完成最终验收；两者复用本任务 slug（`<task-id-or-slug>`）定位材料，不重复本文件已确认的内容。
+7. 实现完成后：有设计稿的 UI 任务可先使用 Design Fidelity Repair Skill 做专项还原修复；随后使用 Testing Skill 依据本文件的验收条件与验证矩阵产出功能测试证据，再使用 Scenario Acceptance Skill 完成最终验收。下游流程复用本任务 slug（`<task-id-or-slug>`）定位材料，不重复本文件已确认的内容。

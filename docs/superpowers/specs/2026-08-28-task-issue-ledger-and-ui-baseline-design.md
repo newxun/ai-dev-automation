@@ -8,6 +8,11 @@
 
 本文同时记录了**被否决的重型方案及其理由**，避免后续重复提出。
 
+> **后续变更（2026-08-28）**：本文 4.6 中“视觉回归属于 Testing”及
+> `testing/reference/visual-testing.md` 的现状描述已被
+> [`2026-08-28-design-fidelity-repair-design.md`](2026-08-28-design-fidelity-repair-design.md)
+> 取代。Testing 只负责功能测试；设计还原使用 `design-fidelity-repair`；视觉回归暂不实现。
+
 ## 一、问题来源
 
 ### 1.1 触发本次讨论的真实失败
