@@ -15,6 +15,8 @@
 - `yunxiao-devops-workflows/`：在已接入的云效（Yunxiao）MCP 之上，规范开发前同步需求/任务/评论、发起流水线与排查失败日志、拆任务与登记统计工时这三条高频协同工作流的取证顺序与写操作确认边界。
 - `skill-bug-record/`：记录执行某个 skill 时发现的、关于该 skill 定义本身的问题，写入共享日志文件。
 - `skill-bug-triage/`：处理 `skill-bug-record` 记录里状态为待处理的问题，判断是否需要修改对应 skill 定义并回写状态。
+- `task-issue-record/`：记录开发后发现的任务交付物问题（UI、业务、逻辑、代码质量、技术规范等任意类型），追加进该任务的问题账本，只记录不修复。
+- `task-issue-triage/`：处理任务问题账本里状态为待处理的条目，判断是否需要修复、实施修复并逐条即时回写状态（已修复/不修复/延后）。
 
 ### 开发就绪 → 测试 → 场景验收工作流
 
@@ -34,6 +36,14 @@ testing（测试） ──┐
 [`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md)
 和
 [`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)。
+
+### 任务问题账本（不依赖上述工作流被调用）
+
+`task-issue-record` / `task-issue-triage` 为「开发后发现的问题」提供一个不挑问题类型、不依赖特定开发
+工作流的落点：不管开发过程是否用了上面三个 Skill，都可以随时记录和处理。账本文件与 `development-readiness`
+的任务报告同处 `docs/development-readiness/tasks/`，但命名只跟任务走（`<task-id-or-slug>-issues.md`，
+不带会话时间戳），因为它是跨会话、长期追加的文档，与「一次会话一份报告」的模式不同。设计背景见
+[`../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md`](../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md)。
 
 ## 放置规则
 
