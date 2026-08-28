@@ -30,6 +30,7 @@
 - 需要把调查结论交接给另一个开发会话。
 - 同一项目同时存在多个独立任务（进行中、暂停、待测试、待验收、已完成），需要分别管理各自材料。
 - 接手者对当前技术栈或项目不熟悉，甚至是非技术参与者，需要调整交接深度。
+- 任务附带设计稿（如蓝湖/Figma 链接），需要区分「UI 呈现以设计稿为准、行为逻辑以需求文档为准」，并在设计稿与需求文档/原型稿冲突时被提醒，而不是被默默按需求文档实现。
 
 ## Not For
 
@@ -48,6 +49,7 @@
 - [`report-template-task.md`](report-template-task.md)：每个任务独立使用的任务就绪模板。
 - [`../../evaluations/development-readiness-scenarios.md`](../../evaluations/development-readiness-scenarios.md)：通用场景化评估用例。
 - [`../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)：开发就绪、测试与场景验收三个 Skill 共享的目录结构、材料链和已决策项。
+- [`../../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md`](../../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md)：UI 设计稿基准原则的设计背景，以及与之同批推出的任务问题账本 Skill（[`task-issue-record`](../task-issue-record/README.md) / [`task-issue-triage`](../task-issue-triage/README.md)）。
 
 ## 形态说明
 
@@ -118,6 +120,7 @@ Agent 应：
 - 调用 Skill 后在有限自举范围内直接安装、启动、验证并维护报告；越界副作用先按修复批次确认。
 - 支持且执行耗时/高噪音或隔离确有收益时，用一个环境验证子 Agent，主 Agent 核验固定摘要；简单低噪音项目直接执行。
 - 每个任务独立确认基准分支；完全无线索时才回退 `origin/HEAD`。
+- 有设计稿的 UI 任务，按 UI 呈现/行为逻辑分维度采信设计稿与需求文档，原型稿只用于理解交互流程；发现明显出入直接暴露，不静默选择、不为此发起全量设计稿比对；设计稿类工具返回的数据原样落盘，任务材料正文不放 AI 转译的自然语言描述。
 - 阶段二更新本会话基线，阶段三为每个任务更新独立报告。
 - 支持同一项目并行存在多个独立任务，不用唯一 current task 覆盖其他任务。
 - 了解或保守推定接手者背景，调整交接深度，而不是默认接手者熟悉当前岗位或技术栈。
