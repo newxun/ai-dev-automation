@@ -21,13 +21,25 @@ disable-model-invocation: true
 ## 账本落点（与 development-readiness 同处一位置）
 
 ```
-docs/development-readiness/tasks/<task-id-or-slug>-issues.md
+docs/development-readiness/tasks/issues/<task-id-or-slug>.md
 ```
 
-`<task-id-or-slug>` 复用 `development-readiness` Skill 为该任务确定的 slug（若该任务有对应的
-`docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`，直接复用其 slug 部分）。若当前任务
-未经过 `development-readiness`（例如通过其他工作流直接开发），向用户确认任务名称或编号，按同样规则
-（简短、稳定、文件系统安全；同名冲突追加短序号）生成 slug。文件不存在时创建；已存在时只追加，不覆盖。
+放在 `development-readiness` 任务报告所在的 `tasks/` 目录下，参照该目录下已有的 `raw/` 子目录模式，
+单独用 `issues/` 子目录承载账本——这类文件跨会话、长期追加、状态可变，与 `tasks/` 下按会话时间戳生成的
+任务报告是不同性质的产物，用子目录区分比只加文件名后缀更清楚，同时仍满足「与任务就绪文档同处一处」。
+
+### 确定任务 slug（同时处理多个任务时如何分别找到各自账本）
+
+1. 若该任务有对应的 `docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`，直接复用其
+   slug 部分——同一任务的账本与任务报告用同一个 slug，一一对应，不会串到别的任务。
+2. 若当前任务未经过 `development-readiness`（例如通过其他工作流直接开发），先列出
+   `docs/development-readiness/tasks/issues/` 下已有的账本文件名，与用户描述的任务名/编号比对：
+   - 能唯一匹配到已有账本：直接复用该 slug，追加进同一份文件。
+   - 匹配到多个候选或完全找不到：向用户确认具体是哪个任务，或按同样规则（简短、稳定、文件系统安全；
+     同名冲突追加短序号）生成新 slug，不猜测、不合并到另一个任务的账本里。
+3. 只要 slug 确定且不重复，多个任务各自的账本文件天然独立，不需要额外的索引或状态机来区分。
+
+文件不存在时创建；已存在时只追加，不覆盖。
 
 ## 条目格式
 
@@ -48,7 +60,7 @@ docs/development-readiness/tasks/<task-id-or-slug>-issues.md
 ## 工作流
 
 1. **确认对象与现象**：确认这是哪个任务、发生了什么（预期 vs 实际）、涉及位置；信息不足时提问，不代为猜测。
-2. **确定任务 slug 与账本路径**：按上文规则定位或新建 `docs/development-readiness/tasks/<task-id-or-slug>-issues.md`。
+2. **确定任务 slug 与账本路径**：按上文规则定位或新建 `docs/development-readiness/tasks/issues/<task-id-or-slug>.md`；同时存在多个任务时，先列出已有账本文件名帮助判断，不凭空创建可能与已有任务重复的新文件。
 3. **确定触发方式**：
    - 用户主动提出：直接进入第 4 步。
    - 会话结束归集：先列出本次会话中识别到的候选问题，标注每一条是否已在会话内被修复；逐条与用户确认「是否确实未解决、要不要记入账本」，只有用户确认的条目才继续。

@@ -41,8 +41,9 @@ testing（测试） ──┐
 
 `task-issue-record` / `task-issue-triage` 为「开发后发现的问题」提供一个不挑问题类型、不依赖特定开发
 工作流的落点：不管开发过程是否用了上面三个 Skill，都可以随时记录和处理。账本文件与 `development-readiness`
-的任务报告同处 `docs/development-readiness/tasks/`，但命名只跟任务走（`<task-id-or-slug>-issues.md`，
-不带会话时间戳），因为它是跨会话、长期追加的文档，与「一次会话一份报告」的模式不同。设计背景见
+的任务报告同处 `docs/development-readiness/tasks/`（单独用 `issues/` 子目录，与既有的 `raw/` 子目录同级），
+但命名只跟任务走（`issues/<task-id-or-slug>.md`，不带会话时间戳），因为它是跨会话、长期追加的文档，与
+「一次会话一份报告」的模式不同。设计背景见
 [`../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md`](../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md)。
 
 ## 放置规则

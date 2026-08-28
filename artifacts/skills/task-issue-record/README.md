@@ -67,11 +67,12 @@
 ## Outputs
 
 ```
-docs/development-readiness/tasks/<task-id-or-slug>-issues.md
+docs/development-readiness/tasks/issues/<task-id-or-slug>.md
 ```
 
-与该任务在 `development-readiness` 阶段的任务报告同处一个目录，文件名只跟任务走，不跟会话走；
-同一任务的所有问题持续追加进同一份文件。
+与该任务在 `development-readiness` 阶段的任务报告同处 `tasks/` 目录下（`issues/` 子目录，与既有的
+`raw/` 子目录同级），文件名只跟任务走，不跟会话走；同一任务的所有问题持续追加进同一份文件。同时处理
+多个任务时，各任务的账本按各自 slug 独立成文件，不会互相覆盖或混淆。
 
 ## Limitations
 

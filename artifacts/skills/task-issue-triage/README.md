@@ -50,7 +50,7 @@
 
 必需：
 
-- 任务标识或 slug，用于定位 `docs/development-readiness/tasks/<task-id-or-slug>-issues.md`。
+- 任务标识或 slug，用于定位 `docs/development-readiness/tasks/issues/<task-id-or-slug>.md`。
 
 可选：
 

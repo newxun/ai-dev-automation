@@ -43,15 +43,17 @@ disable-model-invocation: true
 ## 账本落点
 
 ```
-docs/development-readiness/tasks/<task-id-or-slug>-issues.md
+docs/development-readiness/tasks/issues/<task-id-or-slug>.md
 ```
 
-与 `task-issue-record` 使用同一份文件、同一套 `task-id-or-slug` 规则。
+与 `task-issue-record` 使用同一份文件、同一套 `task-id-or-slug` 规则；每个任务的账本各自独立成文件，
+互不覆盖。
 
 ## 工作流
 
-1. **定位账本**：确认任务标识，读取对应的 `<task-id-or-slug>-issues.md`；文件不存在或没有任何条目时
-   说明情况并停止，不臆造条目。
+1. **定位账本**：确认任务标识；不确定时先列出 `docs/development-readiness/tasks/issues/` 下已有的账本
+   文件名，与用户描述的任务比对，唯一匹配时直接使用，多个候选或匹配不到时向用户确认，不猜测拿错任务
+   的账本。读取对应的 `<task-id-or-slug>.md`；文件不存在或没有任何条目时说明情况并停止，不臆造条目。
 2. **列出待处理条目**：按分类分组列出所有状态为「待处理」的条目。
 3. **确认本次范围**：默认处理全部待处理条目；用户可指定只处理某个分类或具体几条，其余留待下次。
 4. **逐条处理**：定位涉及位置，判断问题是否成立、是否需要修复；影响面较大时先给出方案等待确认；决定
