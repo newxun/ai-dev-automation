@@ -9,6 +9,7 @@
 
 ## 当前 Skill
 
+- `requirement-consistency-check/`：在 `development-readiness` 之前的独立前置步骤，按顺序核对需求文档自身是否前后一致、需求文档与原型图是否对得上、需求文档+原型图与设计稿是否有明显出入，帮助需求相关方在开发前就"以哪个为准"达成一致。
 - `development-readiness/`：让临时接手陌生仓库的开发者，在编码前达到「真实、可验证、可交接」的开发就绪状态（项目熟悉 + 环境验证 + 任务就绪），并产出跨会话交接文档。
 - `design-fidelity-repair/`：在有蓝湖链接或设计稿图片的 UI 实现基本完成后，通过原始设计源、浏览器截图和独立视觉诊断发现并自动修复明显设计还原偏差。
 - `testing/`：在开发完成后、场景验收前，对照开发就绪阶段确定的验收标准产出可复现的功能测试证据（自动化测试 + 按需浏览器功能测试），不承担截图式视觉判断。
@@ -19,11 +20,15 @@
 - `task-issue-record/`：记录开发后发现的任务交付物问题（UI、业务、逻辑、代码质量、技术规范等任意类型），追加进该任务的问题账本，只记录不修复。
 - `task-issue-triage/`：处理任务问题账本里状态为待处理的条目，判断是否需要修复、实施修复并逐条即时回写状态（已修复/不修复/延后）。
 
-### 开发就绪 → 按需设计还原 → 测试 → 场景验收工作流
+### 需求核对 → 开发就绪 → 按需设计还原 → 测试 → 场景验收工作流
+
+`requirement-consistency-check` 是这条材料链最前面的一道关卡：只有核对通过（或"有条件可用"且已确认）的需求文档，才适合作为权威材料进入 `development-readiness` 任务的 `raw/` 材料区。两者是独立 Skill、独立产出（`docs/requirement-consistency-check/` 与 `docs/development-readiness/` 各自成文），不引入自动联动，只在文档间做人可读的交叉引用。
 
 主线 Skill 共享同一条材料链，覆盖编码前到验收的全过程；开发实现和代码质量 Review 复用已有能力：
 
 ```text
+requirement-consistency-check（需求核对）
+    ↓
 development-readiness（开发就绪）
     ↓
 已有开发能力（Coding Agent）
