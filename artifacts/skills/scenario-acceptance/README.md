@@ -68,6 +68,7 @@
 可选但强烈建议：
 
 - 代码 Review 结论（结构化报告、PR 评论、检查清单或口头小结均可）。
+- 有设计稿 UI 任务的 Design Fidelity Repair 报告。
 - 开发过程中确认过的需求、范围或设计变化记录。
 
 ## Expected Behavior

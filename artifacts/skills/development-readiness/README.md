@@ -14,10 +14,11 @@
 2. 环境就绪：实际验证依赖、服务、启动、构建和最小测试路径。
 3. 任务就绪：针对具体需求提供修改范围、风险、测试和调试指南。
 
-最终生成自包含交接文档，让新的 Coding Agent 会话可以直接开始实现。实现完成后的测试与验收由
-[`testing`](../testing/README.md) 和 [`scenario-acceptance`](../scenario-acceptance/README.md)
-两个 Skill 承接，三者共享同一条「原始资料 → 项目/任务认知 → 代码差异 → 测试证据 → 验收结论」
-材料链，设计背景见
+最终生成自包含交接文档，让新的 Coding Agent 会话可以直接开始实现。有设计稿的 UI 任务在实现
+基本完成后可使用 [`design-fidelity-repair`](../design-fidelity-repair/README.md) 做专项还原修复；
+功能测试与最终验收分别由 [`testing`](../testing/README.md) 和
+[`scenario-acceptance`](../scenario-acceptance/README.md) 承接。各流程复用同一任务 slug 和材料链，
+设计背景见
 [`2026-08-20-readiness-testing-acceptance-handoff.md`](../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md)。
 
 ## Use Cases
@@ -50,6 +51,7 @@
 - [`../../evaluations/development-readiness-scenarios.md`](../../evaluations/development-readiness-scenarios.md)：通用场景化评估用例。
 - [`../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)：开发就绪、测试与场景验收三个 Skill 共享的目录结构、材料链和已决策项。
 - [`../../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md`](../../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md)：UI 设计稿基准原则的设计背景，以及与之同批推出的任务问题账本 Skill（[`task-issue-record`](../task-issue-record/README.md) / [`task-issue-triage`](../task-issue-triage/README.md)）。
+- [`../../../docs/superpowers/specs/2026-08-28-design-fidelity-repair-design.md`](../../../docs/superpowers/specs/2026-08-28-design-fidelity-repair-design.md)：设计还原专项诊断与修复、浏览器截图和独立视觉复查的设计。
 
 ## 形态说明
 
@@ -163,7 +165,7 @@ Agent 不应：
 - `docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`
 - `docs/development-readiness/tasks/raw/<timestamp>-<task-id-or-slug>/`（仅在归集了原始资料时存在）
 
-同一会话持续更新同一组文件，不因阶段推进新建版本；新会话创建新时间戳版本。多个任务各一份文件并共享本会话基线，互不覆盖。环境和任务均可判为 `就绪 / 有限就绪 / 未就绪`。任务 slug 会被 Testing 与 Scenario Acceptance Skill 复用以定位材料。
+同一会话持续更新同一组文件，不因阶段推进新建版本；新会话创建新时间戳版本。多个任务各一份文件并共享本会话基线，互不覆盖。环境和任务均可判为 `就绪 / 有限就绪 / 未就绪`。任务 slug 会被 Design Fidelity Repair、Testing 与 Scenario Acceptance Skill 复用以定位材料。
 
 ## Limitations
 

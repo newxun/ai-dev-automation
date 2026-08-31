@@ -22,6 +22,7 @@
 - 原始需求/来源：
 - 开发就绪任务报告：`docs/development-readiness/tasks/<timestamp>-<task-id-or-slug>.md`
 - 测试报告：`docs/testing/tasks/<timestamp>-<task-id-or-slug>.md`
+- 设计还原修复报告（有设计稿的 UI 任务，若存在）：`docs/design-fidelity-repair/tasks/<timestamp>-<task-id-or-slug>.md`
 - 代码 Review 结论来源与形式（结构化报告 / PR 评论 / 检查清单 / 口头小结 / 缺失）：
 - 各输入对应的代码版本是否一致：是 / 否（说明差异）
 - 需求或项目基线自开发就绪阶段以来是否发生变化：
