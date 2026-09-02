@@ -1,110 +1,145 @@
-# biweekly-artifacts
+# Personal Dev Automation Toolkit
 
-个人 AI Engineering Artifacts 仓库，用于持续沉淀真实研发过程中能够提升开发效率的 AI 资产。
+**Language:** [English](#english) | [中文](#中文)
 
-这个仓库不是围绕某一种 AI 能力，也不是为了某一次汇报而创建。它面向长期积累：Prompt、Workflow、Checklist、Knowledge、Benchmark、MCP、Agent、Skill、Script、CLI、Template、Experiment 等都可以成为 Artifact。
+> **Note:** This repository is transitioning from a team-oriented artifact collection (`biweekly-artifacts`) to a personal, automation-first toolkit. A GitHub rename is planned; update your local remote after the rename.
 
-## 核心理念
+---
 
-### 增强开发者，而不是替代开发者
+<a id="english"></a>
 
-AI 的职责是帮助开发者更快理解问题、减少重复劳动、生成初稿、分析代码、发现风险、提升效率。
+## English
 
-AI 不应该完全替代开发者，也不应该跳过人工判断。任何自动化都应该保留明确的人工确认环节。
+A personal repository for building **fully automated development workflows** — skills, agents, scripts, CLIs, MCP integrations, and reusable artifacts that compound over time.
 
-### 可持续积累
+This is not a one-off demo or a team reporting repo. It is a long-term **personal engineering lab**: tools are added incrementally, refined through real use, and composed into end-to-end automation.
 
-每个 Artifact 都应该可以复用、组合、持续优化，并随着真实使用不断演进。仓库的价值来自长期复利，而不是一次性产出。
+### Vision
 
-### 面向真实开发
+- **Automation-first:** Prefer workflows that run with minimal manual steps; document human checkpoints only where judgment is required.
+- **English-first:** Tool names, skill definitions, CLI flags, prompts, and primary documentation are in English. Chinese translations live alongside when useful.
+- **Personal, then shareable:** Optimized for one developer's daily work; anything worth keeping gets structured so it can be reused later.
+- **Compounding assets:** Every artifact should be reusable, composable, and improvable — value comes from long-term accumulation, not one-off output.
 
-内容应来自真实研发场景，例如需求分析、代码开发、Code Review、调试、测试、文档、Git、CI/CD、AI Workflow、Prompt Engineering、Context Engineering、Benchmark、MCP、Agent、Skill、Workflow、CLI、Automation、Knowledge Base 等。
+### What belongs here
 
-不要为了展示 AI 而创造不存在的需求。
+| Category | Examples |
+|----------|----------|
+| Skills & agents | Cursor/Claude skills, agent playbooks |
+| Workflows | Multi-step automation with clear inputs/outputs |
+| Scripts & CLIs | Runnable tools for repetitive tasks |
+| MCP & integrations | Server configs, tool wrappers |
+| Checklists & templates | Quality gates, artifact scaffolds |
+| Evaluations | Scenario tests for prompts and workflows |
 
-### AI First, Personal First
-
-默认优先思考：AI 是否能减少重复劳动？
-
-但所有高影响决策都应由人确认。仓库首先服务于个人研发效率，其次才服务于团队协作。
-
-## 推荐目录结构
+### Repository layout
 
 ```text
-biweekly-artifacts/
-├── README.md
-├── CONTRIBUTING.md
-├── artifacts/
-│   ├── README.md
+├── README.md                 # Bilingual overview (English default)
+├── CONTRIBUTING.md           # How to add and maintain artifacts
+├── artifacts/                # Core assets (skills, agents, workflows, …)
+│   ├── skills/
 │   ├── agents/
-│   │   ├── README.md
-│   │   └── project-familiarization-agent/
-│   │       ├── README.md
-│   │       └── agent.md
-│   ├── prompts/
-│   │   └── README.md
 │   ├── workflows/
-│   │   ├── README.md
-│   │   └── ai-assisted-code-review/
-│   │       └── README.md
 │   ├── checklists/
-│   │   ├── README.md
-│   │   └── ai-assisted-code-review.md
-│   └── knowledge/
-│       └── README.md
-├── docs/
-│   ├── README.md
-│   ├── principles.md
-│   └── roadmap.md
-└── templates/
-    ├── README.md
-    └── artifact-template.md
+│   └── …
+├── docs/                     # Principles, roadmap, design specs
+└── templates/                # Copy-paste scaffolds for new artifacts
 ```
 
-## 为什么这样设计
+See [`artifacts/README.md`](artifacts/README.md) for placement rules and [`docs/principles.md`](docs/principles.md) for design principles.
 
-- `artifacts/` 是核心资产区，按资产形态进行少量分类，便于后续扩展。
-- `templates/` 放可复制的结构模板，保证新增 Artifact 的质量下限。
-- `docs/` 放长期原则、演进路线和设计说明，避免 README 变得过长。
-- 第一版只保留少量目录，避免一开始建立几十个空分类。
-- 示例 Artifact 选择项目熟悉 Agent 和 Code Review Workflow，因为它们都是高频、真实、可复用的开发场景。
+### Each artifact should document
 
-## 每个 Artifact 建议包含
+- **Problem** — Why it exists
+- **Goal** — What it solves
+- **Use cases** — When to use it
+- **Usage** — How to run it
+- **Limitations** — Known gaps and failure modes
+- **Roadmap** — Planned improvements
 
-每个 Artifact 至少说明：
+Start from [`templates/artifact-template.md`](templates/artifact-template.md).
 
-- Problem：为什么存在
-- Goal：解决什么问题
-- Use Cases：适用场景
-- Usage：如何使用
-- Limitations：已知限制
-- Roadmap：后续计划
+### Workflow
 
-可直接复制 [`templates/artifact-template.md`](templates/artifact-template.md) 创建新 Artifact。
+1. Start from a real friction point in daily development.
+2. Scaffold with the template; implement in English.
+3. Run it on a real task; capture failures and edge cases.
+4. Iterate, merge, or retire — keep the toolbox lean.
 
-## 第一版仓库内容
+### Long-term direction
 
-第一版建议提交：
+- A library of **production-grade automation tools**
+- Composable workflows across review, testing, triage, and release
+- Evaluations that prove tools work before they become defaults
+- Optional MCP servers and CLIs as the surface area grows
 
-1. 根 README，说明仓库愿景、原则、目录结构和使用方式。
-2. `CONTRIBUTING.md`，说明如何新增、维护和评估 Artifact。
-3. `templates/artifact-template.md`，作为所有 Artifact 的统一模板。
-4. 各目录 README，说明职责和放置规则。
-5. 真实示例：Project Familiarization Agent、AI 辅助 Code Review Workflow 和 Checklist。
+---
 
-## 使用方式
+<a id="中文"></a>
 
-1. 从真实研发问题出发，而不是从 AI 能力出发。
-2. 复制模板创建 Artifact。
-3. 在实际任务中使用它。
-4. 记录限制、失败案例和改进点。
-5. 定期整理、合并、淘汰或升级 Artifact。
+## 中文
 
-## 长期目标
+个人 **全自动研发流程** 工具库 —— 用于沉淀 Skills、Agents、脚本、CLI、MCP 集成及可复用资产，并随使用持续演进。
 
-经过持续积累，本仓库应逐步成为：
+仓库定位已从团队双周汇报式的 Artifact 收集，转为 **个人自动化实验室**：工具逐步添加、在真实场景中打磨，并组合成端到端流程。
 
-- 一套个人 AI Engineering Assets
-- 一个可持续成长的知识库
-- 一个研发效率工具箱
-- 一个不断演进的 AI Playground
+### 愿景
+
+- **自动化优先：** 优先构建可自动运行的流程；仅在需要人工判断处保留明确检查点。
+- **英文为主：** 工具名、Skill 定义、CLI 参数、Prompt 及主文档以英文为准；必要时提供中文对照。
+- **个人优先、可复用：** 先服务个人日常研发；值得保留的内容会结构化，便于日后复用或分享。
+- **复利积累：** 每个 Artifact 应可复用、可组合、可迭代 —— 价值来自长期积累，而非一次性产出。
+
+### 适合放入仓库的内容
+
+| 类别 | 示例 |
+|------|------|
+| Skills & Agents | Cursor/Claude Skills、Agent  playbook |
+| Workflows | 多步骤自动化流程 |
+| Scripts & CLIs | 消除重复劳动的可执行工具 |
+| MCP & 集成 | 服务配置、工具封装 |
+| Checklists & Templates | 质量门禁、文档模板 |
+| Evaluations | Prompt / Workflow 场景化验证 |
+
+### 目录结构
+
+```text
+├── README.md                 # 中英双语总览（默认英文）
+├── CONTRIBUTING.md           # 新增与维护规范
+├── artifacts/                # 核心资产区
+│   ├── skills/
+│   ├── agents/
+│   ├── workflows/
+│   ├── checklists/
+│   └── …
+├── docs/                     # 原则、路线图、设计说明
+└── templates/                # 新建 Artifact 的模板
+```
+
+分类规则见 [`artifacts/README.md`](artifacts/README.md)，设计原则见 [`docs/principles.md`](docs/principles.md)。
+
+### 每个 Artifact 建议包含
+
+- **Problem** — 为什么存在
+- **Goal** — 解决什么问题
+- **Use cases** — 适用场景
+- **Usage** — 如何使用
+- **Limitations** — 已知限制与失败模式
+- **Roadmap** — 后续计划
+
+可从 [`templates/artifact-template.md`](templates/artifact-template.md) 复制模板开始。
+
+### 使用方式
+
+1. 从日常研发中的真实痛点出发。
+2. 用模板搭建结构，实现以英文为主。
+3. 在真实任务中运行，记录失败案例与边界。
+4. 持续迭代、合并或淘汰，保持工具箱精简。
+
+### 长期方向
+
+- 可投入日常使用的 **自动化工具库**
+- 可组合的 Review、测试、分诊、发布等流程
+- 工具默认化前的场景化评估
+- 随规模扩展的 MCP 服务与 CLI
