@@ -1,8 +1,8 @@
-# Personal Dev Automation Toolkit
+# ai-dev-automation
 
 **Language:** [English](#english) | [中文](#中文)
 
-> **Note:** This repository is transitioning from a team-oriented artifact collection (`biweekly-artifacts`) to a personal, automation-first toolkit. A GitHub rename is planned; update your local remote after the rename.
+Personal toolkit for building **fully automated development workflows** — skills, agents, scripts, CLIs, MCP integrations, and reusable artifacts.
 
 ---
 
@@ -35,6 +35,7 @@ This is not a one-off demo or a team reporting repo. It is a long-term **persona
 ### Repository layout
 
 ```text
+ai-dev-automation/
 ├── README.md                 # Bilingual overview (English default)
 ├── CONTRIBUTING.md           # How to add and maintain artifacts
 ├── artifacts/                # Core assets (skills, agents, workflows, …)
@@ -82,7 +83,7 @@ Start from [`templates/artifact-template.md`](templates/artifact-template.md).
 
 个人 **全自动研发流程** 工具库 —— 用于沉淀 Skills、Agents、脚本、CLI、MCP 集成及可复用资产，并随使用持续演进。
 
-仓库定位已从团队双周汇报式的 Artifact 收集，转为 **个人自动化实验室**：工具逐步添加、在真实场景中打磨，并组合成端到端流程。
+**ai-dev-automation** 是个人自动化实验室：工具逐步添加、在真实场景中打磨，并组合成端到端流程。
 
 ### 愿景
 
@@ -105,6 +106,7 @@ Start from [`templates/artifact-template.md`](templates/artifact-template.md).
 ### 目录结构
 
 ```text
+ai-dev-automation/
 ├── README.md                 # 中英双语总览（默认英文）
 ├── CONTRIBUTING.md           # 新增与维护规范
 ├── artifacts/                # 核心资产区
