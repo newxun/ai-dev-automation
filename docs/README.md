@@ -1,13 +1,39 @@
 # Docs
 
-这里存放仓库级文档，例如原则、路线图、设计说明和阶段性复盘。
+**Language:** [English](#english) | [中文](#中文)
 
-## 当前文档
+---
 
-- `principles.md`：仓库的长期原则。
-- `roadmap.md`：可持续演进方向。
-- `superpowers/specs/`：较小范围改动的设计记录和一次性规格说明。
+<a id="english"></a>
 
-## 使用建议
+## English
 
-当内容是仓库级原则或跨多个 Artifact 的经验时，放在这里。具体可执行资产仍放在 `artifacts/`。
+Repository-level documentation: principles, roadmap, design specs, and retrospectives.
+
+### Current docs
+
+- [`principles.md`](principles.md) — long-term design principles
+- [`roadmap.md`](roadmap.md) — evolution direction
+- [`superpowers/specs/`](superpowers/specs/) — design records for scoped changes
+
+### When to put content here
+
+Use `docs/` for cross-cutting principles and multi-artifact experience. Executable assets belong in `artifacts/`.
+
+---
+
+<a id="中文"></a>
+
+## 中文
+
+仓库级文档：原则、路线图、设计说明与阶段性复盘。
+
+### 当前文档
+
+- [`principles.md`](principles.md) — 长期原则
+- [`roadmap.md`](roadmap.md) — 演进方向
+- [`superpowers/specs/`](superpowers/specs/) — 较小范围改动的设计记录
+
+### 使用建议
+
+跨多个 Artifact 的原则与经验放这里；可执行资产仍放在 `artifacts/`。
