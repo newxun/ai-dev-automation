@@ -3,7 +3,7 @@
 ## 背景与结论
 
 本设计基于两次 Claude Code 真实运行产物及
-[`newxun/biweekly-artifacts#7`](https://github.com/newxun/biweekly-artifacts/pull/7)
+[`newxun/ai-dev-automation#7`](https://github.com/newxun/ai-dev-automation/pull/7)
 的变更进行评审。Skill 的目标不变：帮助开发者在不熟悉的项目中，在编码前达到真实、
 可验证、可交接的开发就绪状态。
 
