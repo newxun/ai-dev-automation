@@ -14,6 +14,7 @@
 - `design-fidelity-repair/`：在有蓝湖链接或设计稿图片的 UI 实现基本完成后，通过原始设计源、浏览器截图和独立视觉诊断发现并自动修复明显设计还原偏差。
 - `testing/`：在开发完成后、场景验收前，对照开发就绪阶段确定的验收标准产出可复现的功能测试证据（自动化测试 + 按需浏览器功能测试），不承担截图式视觉判断。
 - `scenario-acceptance/`：综合原始需求、项目全局约束、任务契约、代码差异、测试证据与代码 Review 结论，判断最终交付能否验收，并把暴露出的项目事实变化回流给开发就绪阶段。
+- `doc-review-views/`：把上述主线 Skill 产出的「需人工核对」markdown 文档族批量渲染成自包含 HTML 审阅视图，集中输出到 `docs/review-views/`（目录页 + 各视图）。md 是归档面（唯一源），HTML 是人审面（待决事项队列、按严重度/证据冲突筛选、搜索高亮）；对任意传入的项目根目录运行，不绑定特定项目。
 - `yunxiao-devops-workflows/`：在已接入的云效（Yunxiao）MCP 之上，规范开发前同步需求/任务/评论、发起流水线与排查失败日志、拆任务与登记统计工时这三条高频协同工作流的取证顺序与写操作确认边界。
 - `skill-bug-record/`：记录执行某个 skill 时发现的、关于该 skill 定义本身的问题，写入共享日志文件。
 - `skill-bug-triage/`：处理 `skill-bug-record` 记录里状态为待处理的问题，判断是否需要修改对应 skill 定义并回写状态。
@@ -44,6 +45,10 @@ Development Readiness、Testing 与 Scenario Acceptance 用同一个任务 slug 
 [`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-handoff.md)
 和
 [`../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md`](../../docs/superpowers/specs/2026-08-20-readiness-testing-acceptance-implementation-design.md)。
+
+这条链产出的核对报告/就绪基线/任务报告/验收报告，可用 [`doc-review-views`](doc-review-views/) 批量渲染成 HTML
+审阅视图（集中输出到 `docs/review-views/`，含待决事项队列）。它是消费侧审阅层——md 是归档面、HTML 是人审面，
+只读不写任何 md，也不参与产出链的流转。
 
 有蓝湖链接或设计稿图片的 UI 任务可在开发后、Testing 前使用 `design-fidelity-repair`。它会修改代码并
 单独落盘 `docs/design-fidelity-repair/tasks/<timestamp>-<task>.md`；Testing 仍只验证功能，
