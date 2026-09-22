@@ -20,6 +20,7 @@
 - `skill-bug-triage/`：处理 `skill-bug-record` 记录里状态为待处理的问题，判断是否需要修改对应 skill 定义并回写状态。
 - `task-issue-record/`：记录开发后发现的任务交付物问题（UI、业务、逻辑、代码质量、技术规范等任意类型），追加进该任务的问题账本，只记录不修复。
 - `task-issue-triage/`：处理任务问题账本里状态为待处理的条目，判断是否需要修复、实施修复并逐条即时回写状态（已修复/不修复/延后）。
+- `departure-handover/`：离职/离岗时把自己名下的全部职责（在途工作、项目与代码知识、权限账号、对接人、周期职责、隐性经验）整理成接手人能独立接住的交接账本。自动分析只产出带证据的候选线索，逐项经本人确认后才成为交接内容；账本落在工作仓库外的指定目录，跨会话增量维护并显示覆盖度。
 
 ### 需求核对 → 开发就绪 → 按需设计还原 → 测试 → 场景验收工作流
 
@@ -63,6 +64,15 @@ Scenario Acceptance 可按任务风险消费该报告。设计见
 但命名只跟任务走（`issues/<task-id-or-slug>.md`，不带会话时间戳），因为它是跨会话、长期追加的文档，与
 「一次会话一份报告」的模式不同。设计背景见
 [`../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md`](../../docs/superpowers/specs/2026-08-28-task-issue-ledger-and-ui-baseline-design.md)。
+
+### 离职交接（完全独立，不参与上述任何工作流）
+
+`departure-handover` 与上面的材料链没有关系，也**不消费** `development-readiness`、`project-familiarization-agent`
+的产出——那些是临时产物，可能已被删除，内容也不一定准确。它的账本属于「人」而不是「仓库」：一份账本覆盖本人
+名下全部职责，条目上标注所属项目，多仓库时按仓库分别取证、汇入同一份账本。产物落在用户指定的仓库外目录
+（`inventory.md` 总账 + `items/` 分片条目 + 按需 `export/` 定稿），对工作仓库只读不写。核心约束是：仓库里的
+提交信息、注释、文档只作参考线索，任何项目的这类信息都不能直接当事实，必须经本人确认才升格为结论。设计见
+[`../../docs/superpowers/specs/2026-09-22-departure-handover-design.md`](../../docs/superpowers/specs/2026-09-22-departure-handover-design.md)。
 
 ## 放置规则
 
