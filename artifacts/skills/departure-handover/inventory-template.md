@@ -6,18 +6,30 @@
 - Handover root: `<absolute path to this directory>`
 - Owner: `<departing person, and the git identities counted as theirs>`
 - Last updated: `<YYYY-MM-DD>`
+- Successor: `<name, or "undecided">`
+- Handover deadline: `<YYYY-MM-DD>`
+
+## Handover order
+
+Set in the opening interview and confirmed by the user. One section at a time; mark the current one.
+
+| # | Section | State |
+| --- | --- | --- |
+| 1 | `<e.g. project: m-ai-vrm>` | `current` |
+| 2 | `<e.g. wip: m-ai-vrm>` | `pending` |
+| 3 | `<e.g. access>` | `pending` |
 
 ## Coverage
 
-- Written: `<n>` / `<total − dropped>` (`<pct>`%)
+- Written: `<n>` / `<total − dropped>` (`<pct>`%) — `<arithmetic from counted rows, e.g. 3 / (56 − 31) = 3 / 25 = 12%>`
 - Open: `<n>` confirmed awaiting write-up, `<n>` candidates awaiting a ruling
 - Dropped: `<n>`
 
 ## Repositories analysed
 
-| Repository | Analysed from | Last analysed | Baseline commit |
-| --- | --- | --- | --- |
-| `<path or remote>` | `<window, e.g. last 12 months>` | `<YYYY-MM-DD>` | `<short SHA>` |
+| Repository | Mainline(s), user-confirmed | Analysed from | Last analysed | Baseline commit |
+| --- | --- | --- | --- | --- |
+| `<path or remote>` | `<e.g. origin/master, origin/develop>` | `<window, e.g. last 12 months>` | `<YYYY-MM-DD>` | `<short SHA>` |
 
 ## Sources not covered
 
@@ -31,7 +43,7 @@ One table per category. Add a row per item; never delete a row — `dropped` row
 
 | Item | Status | Tag | Key | File | One-line summary / reason |
 | --- | --- | --- | --- | --- | --- |
-| `<short name>` | `candidate` | `[lead-git]` | `git:branch:<name>` | — | `<what the evidence shows, not what it means>` |
+| `<short name>` | `candidate` | `[lead-git]` | `git:branch:<name>` | — | `<what the evidence shows, not what it means — e.g. "master: patch-equivalent (git cherry); develop: not-absorbed">` |
 
 ### project — project and code knowledge
 
