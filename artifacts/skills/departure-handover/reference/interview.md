@@ -12,7 +12,7 @@ Question bank for extracting what the repository cannot show. Use it in two plac
 
 ## Seeding questions (interview-only categories)
 
-Ask these once per category during a sweep, and turn each answer into its own `candidate` or `confirmed` row.
+Ask these when that category's section comes up in the `Handover order`, and turn each answer into its own `candidate` or `confirmed` row.
 
 ### `access`
 

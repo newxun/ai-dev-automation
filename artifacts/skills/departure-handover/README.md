@@ -27,8 +27,8 @@ Design background: [`../../../docs/superpowers/specs/2026-09-22-departure-handov
 
 ## Contents
 
-- [`SKILL.md`](SKILL.md) — entry point: hard boundaries, ledger layout, status model, categories, evidence tags, session loop, sweep protocol.
-- [`reference/analysis.md`](reference/analysis.md) — which signals may be trusted and how far, exact read-only commands, dedup keys, re-run rules.
+- [`SKILL.md`](SKILL.md) — entry point: hard boundaries, ledger layout, status model, categories, evidence tags, session loop (opening interview → handover order), section protocol.
+- [`reference/analysis.md`](reference/analysis.md) — which signals may be trusted and how far, scope and depth tiers, exact read-only commands, dedup keys, re-run rules.
 - [`reference/interview.md`](reference/interview.md) — question bank per category, pacing rules, when an item is done.
 - [`inventory-template.md`](inventory-template.md) — ledger scaffold: coverage, repositories analysed, per-category tables, ruling log.
 - [`item-template.md`](item-template.md) — item scaffold: shared skeleton plus a per-category block.
@@ -42,8 +42,10 @@ Needs file read/write, shell, git and code search. Invoke it explicitly — it i
 First session:
 
 ```text
-我要离职了，开始做交接盘点。交接目录用 <绝对路径>，先分析这个仓库里我名下的线索。
+我要离职了，开始做交接盘点。交接目录用 <绝对路径>。
 ```
+
+The first session is a short interview — successor, deadline, duties, priorities — that fixes the handover order. Analysis then runs one section at a time, and each item is written and aligned with you before the next one starts.
 
 Later sessions:
 
@@ -72,12 +74,12 @@ Optional:
 
 ```text
 <handover-root>/
-├── inventory.md                  # every swept item: status, evidence, coverage
+├── inventory.md                  # handover order, every item's status, evidence, coverage
 ├── items/<category>-<slug>.md    # one deep-dive per item being handed over
-└── export/handover-<date>.md     # on-demand deliverable, assembled from written items
+└── export/handover-<date>.md     # deliverable, rebuilt whenever an item is written
 ```
 
-`items/` files are the only source of content; `inventory.md` carries status and a one-line summary. The export contains only completed items, plus the coverage figure and an explicit list of what is not yet handed over.
+Nothing else is created under the handover root — no analysis reports or scan dumps. `items/` files are the only source of content; `inventory.md` carries status and a one-line summary. The export contains only completed items, plus the coverage figure and an explicit list of what is not yet handed over.
 
 ## Limitations
 
