@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_card.html" import full, card_summary %}
+{% block title %}{{ c.title }} · A股导师{% endblock %}
+{% block content %}
+<a class="back" href="javascript:history.back()">‹ 返回</a>
+{{ full(c) }}
+
+{% if related %}
+<h3 class="sec">明天的做T预案</h3>
+<div class="cards-grid">{% for r in related %}{{ card_summary(r) }}{% endfor %}</div>
+{% endif %}
+
+<section class="card feedback">
+  <div class="fb-row">
+    <a class="btn" href="/chat?card={{ c.id }}">追问导师</a>
+    {% if c.status in ('open', 'triggered') %}
+    <form method="post" action="/card/{{ c.id }}/status" class="inline"><input type="hidden" name="status" value="done"><button class="btn ghost">标记已了结</button></form>
+    {% endif %}
+  </div>
+  <form method="post" action="/card/{{ c.id }}/feedback" class="fb-form">
+    <span class="sub">这张卡有用吗？{% if c.feedback %}（你之前选了「{{ c.feedback }}」）{% endif %}</span>
+    <input name="note" placeholder="可选：哪里不对/哪里有用" value="{{ c.feedback_note or '' }}">
+    <button name="feedback" value="有用" class="btn sm">有用</button>
+    <button name="feedback" value="没用" class="btn sm ghost">没用</button>
+  </form>
+</section>
+{% endblock %}

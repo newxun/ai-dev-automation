@@ -1,0 +1,142 @@
+{% macro status_badge(s) -%}
+<span class="badge st-{{ s }}">{{ STATUS.get(s, s) }}</span>
+{%- endmacro %}
+
+{% macro card_summary(c) -%}
+{% set p = c.payload %}
+<a class="card mini kind-{{ c.kind }} {% if c.status == 'skipped' %}muted{% endif %}" href="/card/{{ c.id }}">
+  <div class="card-head"><span class="kind">{{ KINDS.get(c.kind, c.kind) }}</span>{{ status_badge(c.status) }}</div>
+  <div class="card-title">{{ c.title.split('·')[-1].strip() if c.kind == 't_plan' else c.title }}</div>
+  <div class="conclusion">{{ p.conclusion }}</div>
+  {% if p.actions %}<div class="sub">{{ p.actions[0] }}{% if p.actions|length > 1 %} …{% endif %}</div>{% endif %}
+</a>
+{%- endmacro %}
+
+{% macro skeleton(p) -%}
+<div class="conclusion big">{{ p.conclusion }}</div>
+{% if p.mentor_note %}<div class="mentor-note"><b>导师：</b>{{ p.mentor_note }}</div>{% endif %}
+{% if p.actions %}
+<section class="blk actions"><h4>动作（照着设条件单）</h4>
+  <ol>{% for a in p.actions %}<li>{{ a }}</li>{% endfor %}</ol>
+  {% if p.valid_until %}<div class="sub">有效期：{{ p.valid_until }}</div>{% endif %}
+</section>
+{% endif %}
+{% if p.wrong_if %}
+<section class="blk"><h4>认错条件（出现就按计划认错）</h4><ul>{% for w in p.wrong_if %}<li>{{ w }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% if p.worst_case %}
+<section class="blk worst"><h4>最坏情况</h4>
+  <div><b class="down-money">{{ p.worst_case.amount|money }}</b>，占总资产 <b>{{ p.worst_case.pct|pct(2) }}</b></div>
+  <div class="sub">{{ p.worst_case.text }}</div>
+</section>
+{% endif %}
+{% if p.counter %}<section class="blk counter"><h4>反方理由</h4><p>{{ p.counter }}</p></section>{% endif %}
+{% if p.basis %}
+<details class="blk" {% if not p.actions %}open{% endif %}><summary>依据（{{ p.basis|length }} 条，含来源和时间）</summary>
+  <ul class="basis">{% for b in p.basis %}<li>{{ b.text }}<span class="src">{{ b.source }}</span></li>{% endfor %}</ul>
+</details>
+{% endif %}
+{% if p.gaps %}
+<section class="blk gaps"><h4>数据缺口（这些没查到，判断时要打折扣）</h4><ul>{% for g in p.gaps %}<li>{{ g }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% if p.review_at %}<div class="review-at">复查时间：{{ p.review_at }}</div>{% endif %}
+{%- endmacro %}
+
+{% macro extra_t(p) -%}
+{% set e = p.extra or {} %}
+{% if p.candidate %}
+<section class="blk t-grid">
+  <div><span class="lbl">方向</span><b>{{ p.candidate.direction }}</b>（{{ e.direction_reason }}）</div>
+  <div><span class="lbl">手续费与保本</span>{{ e.breakeven }}</div>
+  <div><span class="lbl">预期效果</span>{{ e.expected }}</div>
+</section>
+<section class="blk"><h4>放弃条件</h4><ul>{% for a in e.abandon %}<li>{{ a }}</li>{% endfor %}</ul></section>
+<section class="blk"><h4>收尾规则（14:30 后）</h4><ul>{% for a in e.wrap_up %}<li>{{ a }}</li>{% endfor %}</ul></section>
+<section class="blk"><h4>历史粗验</h4><p>{{ e.backtest }}</p></section>
+{% if e.alternatives %}<details class="blk"><summary>其它候选</summary><ul>{% for a in e.alternatives %}<li>{{ a }}</li>{% endfor %}</ul></details>{% endif %}
+{% if e.warnings %}<section class="blk gaps"><h4>提醒</h4><ul>{% for a in e.warnings %}<li>{{ a }}</li>{% endfor %}</ul></section>{% endif %}
+{% else %}
+<section class="blk"><h4>为什么不做</h4><ul>{% for b in e.blockers or [] %}<li>{{ b }}</li>{% endfor %}</ul></section>
+{% endif %}
+{%- endmacro %}
+
+{% macro extra_health(p) -%}
+{% set e = p.extra or {} %}
+<section class="blk"><h4>逐只体检</h4>
+<div class="table-wrap"><table class="tbl stack">
+<thead><tr><th>股票</th><th>状态</th><th>仓位</th><th>浮盈亏</th><th>趋势</th><th>导师点评</th><th></th></tr></thead>
+<tbody>
+{% for s in e.stocks or [] %}
+<tr>
+  <td class="lead"><b>{{ s.name }}</b><div class="sub">{{ s.code }} · {{ s.industry }}</div></td>
+  <td data-label="状态"><span class="badge hs-{{ s.status }}">{{ s.status }}</span></td>
+  <td data-label="仓位">{{ s.weight|pct }}</td>
+  <td data-label="浮盈亏" class="{{ s.pnl_pct|signed }}">{{ s.pnl_pct|pct }}</td>
+  <td data-label="趋势">{{ s.trend }}</td>
+  <td class="note">{{ s.comment }}</td>
+  <td class="act">{% if s.status != '健康' %}<form method="post" action="/run/keep" class="inline"><input type="hidden" name="code" value="{{ s.code }}"><button class="btn sm">去留卡</button></form>{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+</section>
+{% if e.industry_crowded %}
+<section class="blk gaps"><h4>行业扎堆</h4><ul>{% for g in e.industry_crowded %}<li>{{ g.industry }}：{{ g.codes|join('、') }}，占 {{ g.weight|pct }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% if e.violations %}
+<section class="blk gaps"><h4>违反你的硬规则</h4><ul>{% for v in e.violations %}<li>{{ v.detail }}</li>{% endfor %}</ul></section>
+{% endif %}
+<section class="blk"><h4>未来 20 个交易日事件</h4>
+{% if e.events %}<ul>{% for ev in e.events %}<li>{{ ev.date }} {{ ev.name }} {{ ev.type }}：{{ ev.detail }}</li>{% endfor %}</ul>{% else %}<p class="sub">没有查到已知事件（以数据缺口为准）。</p>{% endif %}
+</section>
+{%- endmacro %}
+
+{% macro extra_keep(p) -%}
+{% set e = p.extra or {} %}
+<section class="blk"><h4>几条路的代价（钱和时间）</h4>
+<div class="table-wrap"><table class="tbl stack"><thead><tr><th>路径</th><th>金额</th><th>时间</th><th>说明</th></tr></thead><tbody>
+{% for x in e.paths or [] %}<tr {% if x.name.startswith(e.decision) %}class="hl"{% endif %}><td class="lead"><b>{{ x.name }}</b></td><td data-label="金额" class="{{ x.money|signed }}">{{ x.money|money }}</td><td data-label="时间">{{ x.time }}</td><td class="note">{{ x.detail }}</td></tr>{% endfor %}
+</tbody></table></div>
+</section>
+{% if e.cash_test %}<section class="blk"><h4>现金测试</h4><p>{{ e.cash_test }}</p></section>{% endif %}
+{% if e.ask_user %}<section class="blk ask"><h4>导师想问你</h4><p>{{ e.ask_user }}</p>
+<form method="post" action="/run/keep"><input type="hidden" name="code" value="{{ p.title.split('（')[-1].rstrip('）') }}">
+<textarea name="buy_reason" rows="2" placeholder="写下当初买入的理由，导师会重新评估"></textarea><button class="btn sm">补充理由后重新评估</button></form></section>{% endif %}
+{%- endmacro %}
+
+{% macro extra_plan(p) -%}
+{% set e = p.extra or {} %}
+<section class="blk"><h4>你的理由</h4><p>{{ e.reason }}</p>
+{% if e.gates %}<h4>触发的冷静关卡</h4><ul>{% for g in e.gates %}<li>{{ g.message }}</li>{% endfor %}</ul><p class="sub">你写的理由：{{ e.gate_reason }}</p>{% endif %}
+<p class="sub">仓位计算：最多 {{ e.sizing.shares }} 股（受「{{ e.sizing.binding }}」约束）</p></section>
+{%- endmacro %}
+
+{% macro extra_review(p) -%}
+{% set e = p.extra or {} %}
+<section class="blk"><h4>今天市场</h4><p>{{ e.market }}</p></section>
+<section class="blk"><h4>今天的成交</h4>
+{% if e.trades %}
+<div class="table-wrap"><table class="tbl stack"><thead><tr><th>股票 · 时间</th><th>方向</th><th>数量×价格</th><th>标记</th><th>导师点评</th></tr></thead><tbody>
+{% for t in e.trades %}<tr><td class="lead"><b>{{ t.name or t.code }}</b> <span class="sub">{{ t.time[11:16] }}</span></td><td class="act {{ 'up' if t.side == '买入' else 'down' }}">{{ t.side }}</td><td data-label="数量×价格">{{ t.qty }}×{{ t.price }}</td>
+<td data-label="标记">{% for l in t.labels %}<span class="tag {% if '计划外' in l or '追涨' in l or '亏后' in l or '偏离' in l %}tag-bad{% else %}tag-ok{% endif %}">{{ l }}</span>{% endfor %}</td><td class="note">{{ t.comment }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<p class="sub">今天没有成交记录。</p>{% endif %}
+<p class="sub">本月计划外交易 {{ e.month_unplanned }} 笔，冲动交易（追涨/亏后马上再买）{{ e.month_impulsive }} 笔。</p>
+</section>
+{% if e.t_reconcile %}
+<section class="blk"><h4>昨天的做T预案对账</h4><ul>{% for r in e.t_reconcile %}<li><b>{{ r.name }}</b>：{{ r.status }}。{{ r.summary }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% if e.plan_updates %}<section class="blk"><h4>计划账本</h4><ul>{% for u in e.plan_updates %}<li>{{ u }}</li>{% endfor %}</ul></section>{% endif %}
+{% if e.reconcile_notes %}<section class="blk gaps"><h4>对账提示</h4><ul>{% for u in e.reconcile_notes %}<li>{{ u }}</li>{% endfor %}</ul></section>{% endif %}
+<section class="blk"><h4>明天</h4><ul>{% for u in e.tomorrow %}<li>{{ u }}</li>{% endfor %}</ul></section>
+{%- endmacro %}
+
+{% macro full(c) -%}
+{% set p = c.payload %}
+<article class="card full kind-{{ c.kind }}">
+  <div class="card-head"><span class="kind">{{ KINDS.get(c.kind, c.kind) }}</span>{{ status_badge(c.status) }}<span class="sub right">生成于 {{ c.created_at[5:16] }}</span></div>
+  <h2 class="card-title">{{ c.title }}</h2>
+  {{ skeleton(p) }}
+  {% if c.kind == 't_plan' %}{{ extra_t(p) }}{% elif c.kind == 'health' %}{{ extra_health(p) }}{% elif c.kind == 'keep' %}{{ extra_keep(p) }}{% elif c.kind == 'plan' %}{{ extra_plan(p) }}{% elif c.kind == 'review' %}{{ extra_review(p) }}{% endif %}
+  {% if c.result %}<section class="blk result"><h4>事后对账</h4><p>{{ c.result.summary or c.result }}</p></section>{% endif %}
+</article>
+{%- endmacro %}

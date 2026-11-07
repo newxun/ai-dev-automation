@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}登录 · A股导师{% endblock %}
+{% block bodyclass %}auth{% endblock %}
+{% block nav %}{% endblock %}
+{% block bottomnav %}{% endblock %}
+{% block content %}
+<form method="post" action="/login" class="card auth-card">
+  <h1>A股导师</h1>
+  <p class="sub">输入访问密码。登录后这台设备 7 天内免登录。</p>
+  <input type="hidden" name="next" value="{{ next }}">
+  <input type="password" name="password" placeholder="访问密码" autofocus required autocomplete="current-password">
+  <button class="btn primary block">登录</button>
+</form>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}发送记录 · A股导师{% endblock %}
+{% block content %}
+<h1>发送记录</h1>
+<p class="sub">每次发给模型的完整内容都在这里（最近 200 条）。发送前程序会再做一遍脱敏兜底，「遮盖」一栏是这一步额外遮住的数量。</p>
+{% if not logs %}<p class="empty">还没有发送过任何内容。</p>{% endif %}
+{% for l in logs %}
+<details class="card log">
+  <summary><b>{{ l.purpose }}</b> <span class="sub">{{ l.created_at }} · {{ l.profile }}（{{ l.model }}）{% if l.masked %} · 遮盖 {{ l.masked }} 处{% endif %}</span></summary>
+  <pre class="pre">{{ l.payload }}</pre>
+</details>
+{% endfor %}
+{% endblock %}

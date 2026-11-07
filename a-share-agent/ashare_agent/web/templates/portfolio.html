@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}持仓 · A股导师{% endblock %}
+{% block content %}
+<div class="title-row">
+  <h1>持仓</h1>
+  <div class="row-actions"><a class="btn sm primary" href="/import">导入/更新持仓</a><a class="btn sm" href="/import?kind=trades">导入成交</a></div>
+</div>
+{% if pv %}
+<p class="sub">持仓快照 {{ meta.as_of }}（{{ meta.source }}），行情按 {{ as_of }} 收盘。</p>
+<div class="stats">
+  <div><span class="lbl">总资产</span><b>{{ pv.total_assets|money }}</b></div>
+  <div><span class="lbl">股票市值</span><b>{{ pv.stock_value|money }}</b></div>
+  <div><span class="lbl">可用资金</span><b>{{ pv.cash|money }}</b>
+    <form method="post" action="/portfolio/cash" class="inline cash-form"><input name="cash" inputmode="decimal" placeholder="新金额" aria-label="新的可用资金"><button class="btn sm ghost">改</button></form></div>
+  <div><span class="lbl">第一大持仓</span><b>{{ pv.concentration.top1|pct }}</b></div>
+</div>
+<div class="table-wrap"><table class="tbl stack">
+<thead><tr><th>股票</th><th>数量</th><th>成本</th><th>收盘</th><th>今日</th><th>浮盈亏</th><th>仓位</th><th>趋势</th><th></th></tr></thead>
+<tbody>
+{% for h in pv.holdings %}
+<tr>
+  <td class="lead"><b>{{ h.name }}</b><div class="sub">{{ h.code }} · {{ h.industry }}</div></td>
+  <td data-label="数量">{{ h.qty }}<div class="sub">明日可卖 {{ h.sellable_tomorrow }}</div></td>
+  <td data-label="成本">{{ h.cost or '—' }}</td>
+  <td data-label="收盘">{{ h.close }}</td>
+  <td data-label="今日" class="{{ h.pct_chg|signed }}">{{ h.pct_chg|pct(2) }}</td>
+  <td data-label="浮盈亏" class="{{ h.pnl|signed }}">{{ h.pnl|money }}<div class="sub {{ h.pnl_pct|signed }}">{{ h.pnl_pct|pct }}</div></td>
+  <td data-label="仓位">{{ h.weight|pct }}</td>
+  <td data-label="趋势">{{ h.trend }}</td>
+  <td class="act">
+    {% if keep_cards.get(h.code) %}<a class="sub" href="/card/{{ keep_cards[h.code].id }}">去留：{{ keep_cards[h.code].payload.extra.decision }}</a>{% endif %}
+    <form method="post" action="/run/keep" class="inline js-busy"><input type="hidden" name="code" value="{{ h.code }}"><button class="btn sm ghost">去留卡</button></form>
+  </td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% if pv.industry %}
+<h3 class="sec">行业分布</h3>
+<div class="bars">{% for g in pv.industry %}<div class="bar"><span>{{ g.industry }}</span><div><i style="width: {{ ((g.weight or 0) * 100)|round(1) }}%"></i></div><b>{{ g.weight|pct }}</b></div>{% endfor %}</div>
+{% endif %}
+{% if pv.gaps %}<section class="blk gaps"><h4>数据缺口</h4><ul>{% for g in pv.gaps %}<li>{{ g }}</li>{% endfor %}</ul></section>{% endif %}
+<form method="post" action="/run/health" class="js-busy"><button class="btn primary">做一次持仓体检</button></form>
+{% else %}
+<p class="empty">还没有持仓。<a href="/import">去导入</a></p>
+{% endif %}
+{% endblock %}

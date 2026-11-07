@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}请稍候 · A股导师{% endblock %}
+{% block content %}
+<section class="card job" data-job="{{ job.id }}">
+  {% if job.status == 'error' %}
+  <h2>没有完成</h2>
+  <div class="flash bad">{{ job.error }}</div>
+  <a class="btn" href="javascript:history.back()">返回</a>
+  {% else %}
+  <div class="spinner"></div>
+  <h2 class="js-label">{{ job.label }}</h2>
+  <p class="sub">已用 <span class="js-elapsed">0</span> 秒。程序先取数、算数，再请导师判断，一般需要 10 秒到 1 分钟。可以先去做别的，回来刷新即可。</p>
+  <noscript><meta http-equiv="refresh" content="3"></noscript>
+  {% endif %}
+</section>
+{% endblock %}

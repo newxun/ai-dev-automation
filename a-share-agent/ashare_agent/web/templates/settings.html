@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}设置 · A股导师{% endblock %}
+{% block content %}
+<h1>设置</h1>
+<div class="tabs">
+  {% for k, l in [("model", "模型"), ("fees", "费率"), ("rules", "规则与画像"), ("access", "手机访问与安全")] %}
+  <a href="/settings?tab={{ k }}" class="{% if tab == k %}on{% endif %}">{{ l }}</a>
+  {% endfor %}
+</div>
+
+{% if tab == 'model' %}
+<p class="sub">任何兼容 OpenAI 接口的模型都能用。<b>新模型要先通过考卷，才能设为默认。</b>API Key 只保存在这台电脑上，页面上只显示末四位，不会发到手机。</p>
+{% set ordered = (cfg.profiles.items()|selectattr('0', 'equalto', cfg.active_profile)|list) + (cfg.profiles.items()|rejectattr('0', 'equalto', cfg.active_profile)|list) %}
+{% for name, p in ordered %}
+{% set ex = cfg.exam_results.get(name) %}
+<section class="card model {% if name == cfg.active_profile %}current{% endif %}">
+  <div class="card-head">
+    <b>{{ name }}</b>
+    {% if name == cfg.active_profile %}<span class="badge st-open">当前使用</span>{% endif %}
+    {% if ex %}<span class="badge {% if ex.passed %}st-done{% else %}st-expired{% endif %}">考卷{% if ex.passed %}通过{% else %}未通过{% endif %} {{ ex.date[5:] }}</span>{% else %}<span class="badge st-expired">未考试</span>{% endif %}
+  </div>
+  <div class="sub">{{ p.model }} · {{ p.base_url }} · Key：{{ p.masked_key() }}（{{ p.key_source() }}）{% if p.vision_enabled %} · 支持看图{% endif %}</div>
+  {% if ex %}<div class="sub">{% for s, v in ex.sections.items() %}{{ s }}：{{ v.score }}{% if not loop.last %}；{% endif %}{% endfor %}{% if ex.report %} · <a href="/exam/{{ ex.report }}">查看报告</a>{% endif %}</div>{% endif %}
+  <div class="row-actions">
+    <form method="post" action="/settings/model/test" class="inline"><input type="hidden" name="name" value="{{ name }}"><button class="btn sm">测试连接</button></form>
+    <form method="post" action="/settings/exam" class="inline"><input type="hidden" name="name" value="{{ name }}"><button class="btn sm">用考卷试考</button></form>
+    {% if name != cfg.active_profile %}<form method="post" action="/settings/model/activate" class="inline"><input type="hidden" name="name" value="{{ name }}"><button class="btn sm primary">设为默认</button></form>
+    <form method="post" action="/settings/model/delete" class="inline" onsubmit="return confirm('删除这个模型配置？')"><input type="hidden" name="name" value="{{ name }}"><button class="btn sm ghost">删除</button></form>{% endif %}
+  </div>
+  <details><summary>修改</summary>
+    <form method="post" action="/settings/model" class="form">
+      <input type="hidden" name="original" value="{{ name }}"><input type="hidden" name="provider" value="{{ p.provider }}">
+      <div class="form-row">
+        <label>名称 <input name="name" value="{{ name }}"></label>
+        <label>模型名 <input name="model" value="{{ p.model }}"></label>
+      </div>
+      <label>接口地址 base_url <input name="base_url" value="{{ p.base_url }}"></label>
+      <label>API Key <input name="api_key" type="password" autocomplete="off" placeholder="留空表示不修改（当前 {{ p.masked_key() }}）"></label>
+      <label class="check"><input type="checkbox" name="persist_key" value="1" {% if p.persist_key %}checked{% endif %}> 把 Key 保存到本机配置文件（不勾则只在本次运行期间有效，也可用环境变量 {{ p.env_key_name() or 'ASHARE_LLM_API_KEY' }}）</label>
+      <label class="check"><input type="checkbox" name="supports_vision" value="1" {% if p.supports_vision %}checked{% endif %}> 这个模型支持看图</label>
+      <button class="btn sm primary">保存</button>
+    </form>
+  </details>
+</section>
+{% endfor %}
+<section class="card">
+  <h3>添加模型</h3>
+  <form method="post" action="/settings/model" class="form" id="add-model">
+    <div class="form-row">
+      <label>服务商 <select name="provider" class="js-preset">
+        {% for k, pr in presets.items() %}<option value="{{ k }}" data-url="{{ pr.base_url }}" data-model="{{ pr.models[0] if pr.models else '' }}">{{ pr.label }}</option>{% endfor %}
+      </select></label>
+      <label>名称 <input name="name" required placeholder="比如：DeepSeek"></label>
+    </div>
+    <div class="form-row">
+      <label>接口地址 <input name="base_url" class="js-url" placeholder="留空用预设"></label>
+      <label>模型名 <input name="model" class="js-model" placeholder="留空用预设"></label>
+    </div>
+    <label>API Key <input name="api_key" type="password" autocomplete="off" placeholder="sk-..."></label>
+    <label class="check"><input type="checkbox" name="persist_key" value="1" checked> 把 Key 保存到本机配置文件</label>
+    <button class="btn primary">保存</button>
+  </form>
+</section>
+<p class="sub"><a href="/sendlog">查看发送记录</a>：每次发给模型的完整内容（已脱敏）都在这里。</p>
+
+{% elif tab == 'fees' %}
+<form method="post" action="/settings/fees" class="card form">
+  <p class="sub">做T的保本价差、计划卡的最坏情况都按这里算。印花税（卖出 0.05%）和过户费（0.001%）按国家规定自动计算。</p>
+  <div class="form-row">
+    <label>佣金费率（万分之几） <input name="commission_rate" value="{{ (cfg.fees.commission_rate * 10000)|round(2) }}" inputmode="decimal"></label>
+    <label>最低佣金（元） <input name="min_commission" value="{{ cfg.fees.min_commission }}" inputmode="decimal"></label>
+  </div>
+  <label class="check"><input type="checkbox" name="waive_min" value="1" {% if cfg.fees.min_commission == 0 %}checked{% endif %}> 免五（不收 5 元最低佣金）</label>
+  <button class="btn primary">保存</button>
+</form>
+
+{% elif tab == 'rules' %}
+{% set r = cfg.rules %}
+<form method="post" action="/settings/rules" class="card form">
+  <h3>硬规则</h3>
+  <div class="form-row">
+    <label>单只最多占总资产（%） <input name="max_position_pct" value="{{ (r.max_position_pct * 100)|round|int }}"></label>
+    <label>单笔最坏亏损上限（% 总资产） <input name="max_trade_loss_pct" value="{{ (r.max_trade_loss_pct * 100)|round(2) }}"></label>
+  </div>
+  <div class="form-row">
+    <label>做T最多用底仓的（%） <input name="t_max_ratio" value="{{ (r.t_max_ratio * 100)|round(1) }}"></label>
+    <label>当日涨幅超过多少算追涨（%） <input name="chase_pct" value="{{ (r.chase_pct * 100)|round(1) }}"></label>
+    <label>亏损卖出后冷静（交易日） <input name="cooldown_days" value="{{ r.cooldown_days }}"></label>
+  </div>
+  <label class="check"><input type="checkbox" name="allow_st" {% if r.allow_st %}checked{% endif %}> 允许碰 ST 股</label>
+  <label class="check"><input type="checkbox" name="allow_bj" {% if r.allow_bj %}checked{% endif %}> 允许碰北交所</label>
+  <label>自己的规则（每行一条，最多 5 条） <textarea name="custom" rows="4">{{ r.custom|join('\n') }}</textarea></label>
+  <label>收盘数据自动准备时间 <input name="review_prepare_time" value="{{ cfg.review_prepare_time }}"></label>
+  <button class="btn primary">保存</button>
+</form>
+<section class="card"><h3>你的画像</h3><p>{{ cfg.profile.summary or '还没有画像。' }}</p><a class="btn sm" href="/onboarding">重新访谈</a></section>
+
+{% else %}
+<section class="card">
+  <h3>用手机访问</h3>
+  {% if urls %}
+  <p>手机和这台电脑连同一个 Wi-Fi，用浏览器打开：</p>
+  {% for u in urls %}<p class="url">{{ u }}</p>{% endfor %}
+  <div class="qr">{{ qr_svg|safe }}</div>
+  <p class="sub">打开后在浏览器菜单里选「添加到主屏幕」，就能像 App 一样用。</p>
+  {% else %}<p class="sub">没检测到局域网地址，请确认电脑已连上 Wi-Fi/网线。</p>{% endif %}
+  <div class="flash warn">只允许局域网访问。<b>不要在路由器上做端口映射/内网穿透</b>，否则你的持仓和模型 Key 会暴露在公网。</div>
+</section>
+<section class="card">
+  <h3>登录设备</h3>
+  <p class="sub">当前有 {{ sessions }} 个设备保持登录（每次登录有效 7 天；连续输错 5 次密码锁定 15 分钟）。</p>
+  <div class="row-actions">
+    <form method="post" action="/logout" class="inline"><button class="btn sm">退出本设备</button></form>
+    <form method="post" action="/logout-all" class="inline"><button class="btn sm ghost">退出所有设备</button></form>
+  </div>
+</section>
+<form method="post" action="/settings/password" class="card form">
+  <h3>修改访问密码</h3>
+  <div class="form-row">
+    <label>原密码 <input type="password" name="old" required></label>
+    <label>新密码（至少 6 位） <input type="password" name="new" required minlength="6"></label>
+  </div>
+  <button class="btn">修改</button>
+</form>
+{% endif %}
+{% endblock %}

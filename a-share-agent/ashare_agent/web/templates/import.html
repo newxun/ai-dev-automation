@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}导入 · A股导师{% endblock %}
+{% block content %}
+<h1>导入</h1>
+<div class="privacy-note">🔒 导入时会先在本机去掉账号、姓名、身份证、手机号、营业部等信息，只保存和发送脱敏后的数据。你可以在「设置 → 发送记录」看到发给模型的全部内容。</div>
+<div class="tabs">
+  <a href="/import?kind=holdings" class="{% if kind == 'holdings' %}on{% endif %}">持仓表</a>
+  <a href="/import?kind=trades" class="{% if kind == 'trades' %}on{% endif %}">交割单/当日成交</a>
+  <a href="/import?kind=screenshot" class="{% if kind == 'screenshot' %}on{% endif %}">持仓截图</a>
+  <a href="/import?kind=manual" class="{% if kind == 'manual' %}on{% endif %}">手动录入</a>
+</div>
+
+{% if kind in ('holdings', 'trades') %}
+<form class="card form" method="post" action="/import/file" enctype="multipart/form-data">
+  <input type="hidden" name="kind" value="{{ kind }}">
+  <p>{% if kind == 'holdings' %}从券商客户端导出「持仓」/「资金股份」表{% else %}从券商客户端导出「交割单」或「当日成交」{% endif %}，支持 CSV、TXT、XLS、XLSX（同花顺、通达信、东方财富等常见格式）。</p>
+  <input type="file" name="file" accept=".csv,.txt,.xls,.xlsx,.tsv" required>
+  <button class="btn primary">上传并识别</button>
+  <p class="sub">下一步会逐行给你确认，确认后才保存。</p>
+</form>
+{% elif kind == 'screenshot' %}
+<form class="card form" method="post" action="/import/screenshot" enctype="multipart/form-data">
+  <p>上传券商 App 的持仓页截图。文字识别在本机完成；只有你确认后，才会把<b>已自动打码</b>的内容交给模型。</p>
+  <input type="file" name="file" accept="image/*" required>
+  <button class="btn primary">识别截图</button>
+</form>
+{% else %}
+<form class="card form" method="post" action="/import/manual">
+  <p>每行一只股票：<code>代码 数量 成本价</code>（名称可写可不写）</p>
+  <textarea name="text" rows="6" placeholder="600111 北方稀土 3000 38.20&#10;300059 2000 21.5"></textarea>
+  <button class="btn primary">下一步：确认</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="A股导师">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" href="/icon-192.png">
+<link rel="stylesheet" href="/static/app.css?v={{ version }}">
+<title>{% block title %}A股导师{% endblock %}</title>
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+<div class="disclaimer" role="note">⚠ {{ DISCLAIMER }}{% if demo %} · 演示模式（冻结行情 + 虚构账户）{% endif %}</div>
+{% block nav %}
+<header class="topbar">
+  <a class="brand" href="/">A股导师</a>
+  <nav class="topnav">
+    {% set items = [("/", "今天"), ("/plans", "计划"), ("/chat", "问导师"), ("/portfolio", "持仓"), ("/settings", "设置")] %}
+    {% for href, label in items %}
+    <a href="{{ href }}" class="{% if (href == '/' and path == '/') or (href != '/' and path.startswith(href)) %}on{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+  <a class="model-pill {% if not exam_ok %}warn{% endif %}" href="/settings?tab=model" title="当前模型">
+    {{ active.name }}{% if not exam_ok %} · 未考试{% endif %}
+  </a>
+</header>
+{% endblock %}
+<main class="wrap">
+  {% if flash %}<div class="flash ok">{{ flash }}</div>{% endif %}
+  {% if err %}<div class="flash bad">{{ err }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+{% block bottomnav %}
+<nav class="bottomnav">
+  {% set items = [("/", "今天", "◎"), ("/plans", "计划", "☰"), ("/chat", "问导师", "✎"), ("/portfolio", "持仓", "▤"), ("/settings", "设置", "⚙")] %}
+  {% for href, label, ic in items %}
+  <a href="{{ href }}" class="{% if (href == '/' and path == '/') or (href != '/' and path.startswith(href)) %}on{% endif %}"><span>{{ ic }}</span>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% endblock %}
+<script src="/static/app.js?v={{ version }}"></script>
+</body>
+</html>

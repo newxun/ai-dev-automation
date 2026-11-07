@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_card.html" import card_summary %}
+{% block title %}计划账本 · A股导师{% endblock %}
+{% block content %}
+<h1>计划账本</h1>
+<p class="sub">所有建议都落成卡片：到复查日会自动对照实际走势和你的成交。</p>
+<div class="tabs">
+  <a href="/plans" class="{% if tab == 'open' %}on{% endif %}">进行中</a>
+  <a href="/plans?tab=t" class="{% if tab == 't' %}on{% endif %}">做T预案</a>
+  <a href="/plans?tab=all" class="{% if tab == 'all' %}on{% endif %}">全部卡片</a>
+</div>
+<div class="row-actions">
+  <a class="btn sm" href="/pretrade">新的交易计划</a>
+  <a class="btn sm ghost" href="/report">交割单体检</a>
+</div>
+{% if items %}
+<div class="cards-grid">{% for c in items %}{{ card_summary(c) }}{% endfor %}</div>
+{% else %}
+<p class="empty">这里还没有卡片。</p>
+{% endif %}
+{% endblock %}

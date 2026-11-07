@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_card.html" import skeleton %}
+{% block title %}考卷报告 · A股导师{% endblock %}
+{% block content %}
+<a class="back" href="/settings?tab=model">‹ 返回设置</a>
+<h1>考卷报告：{{ rep.profile }}</h1>
+<p class="sub">{{ rep.model }} · {{ rep.started_at }} · 耗时 {{ rep.seconds }} 秒 · 基于冻结的真实历史行情和虚构账户</p>
+<div class="flash {% if rep.auto_passed %}ok{% else %}bad{% endif %}">自动评分部分：{% if rep.auto_passed %}全部通过，可以设为默认{% else %}未通过，不能设为默认{% endif %}</div>
+<div class="table-wrap"><table class="tbl">
+<thead><tr><th>部分</th><th>成绩</th><th>通过线</th><th>结果</th></tr></thead><tbody>
+{% for k, v in rep.sections.items() %}<tr><td>{{ names[k] }}</td><td>{{ v.score }}</td><td class="note">{{ v.rule }}</td><td>{% if v.passed %}<span class="tag tag-ok">通过</span>{% else %}<span class="tag tag-bad">未通过</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+
+{% for k, v in rep.sections.items() %}
+<details class="card" {% if not v.passed %}open{% endif %}>
+  <summary><b>{{ names[k] }}</b> · {{ v.score }}</summary>
+  {% if k == 'scenarios' %}
+  <form method="post" action="/exam/{{ stem }}/scores">
+  {% for it in v["items"] %}
+    <section class="blk">
+      <h4>{{ it.id }} {{ it.title }}</h4>
+      <div class="exam-card">{{ skeleton(it.card) }}</div>
+      <p class="sub">评分要点：{{ it.points|join('；') }}</p>
+      {% if it.auto_problems %}<p class="down">自动检查问题：{{ it.auto_problems|join('；') }}</p>{% endif %}
+      <label>人工评分 <select name="score_{{ it.id }}"><option value="">—</option>{% for s in range(1, 6) %}<option value="{{ s }}" {% if scores.get(it.id) == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+    </section>
+  {% endfor %}
+  <button class="btn sm">保存人工评分</button>
+  </form>
+  {% else %}
+  <ul class="exam-items">
+  {% for it in v["items"] %}
+    <li class="{% if it.passed %}ok{% else %}bad{% endif %}">
+      <b>{{ it.id }}</b> {{ it.question or it.name or it.what or it.task }}
+      {% if it.answer %}<div class="answer">{{ it.answer }}</div>{% endif %}
+      {% if it.conclusion %}<div class="answer">{{ it.as_of }} → {{ it.target }}：{{ it.conclusion }}{% if it.next_day %}<br><span class="sub">次日实际：{{ it.next_day }}</span>{% endif %}</div>{% endif %}
+      {% if it.expected %}<div class="sub">标准答案：{{ it.expected|join(' / ') }}</div>{% endif %}
+      {% if it.answers %}<div class="sub">三次结论：{{ it.answers|join(' | ') }}</div>{% endif %}
+      {% if it.leaks is defined %}<div class="sub">泄露：{{ it.leaks|join('、') or '无' }}</div>{% endif %}
+      {% if it.problems %}<div class="down">{{ it.problems|join('；') }}</div>{% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+</details>
+{% endfor %}
+{% endblock %}

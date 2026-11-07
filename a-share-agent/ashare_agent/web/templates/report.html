@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}交割单体检 · A股导师{% endblock %}
+{% block content %}
+<h1>交割单体检</h1>
+{% if not rep %}
+<p class="empty">还没有成交记录。<a href="/import?kind=trades">导入交割单</a>（越长越准，建议导出最近半年）。</p>
+{% else %}
+<p class="sub">基于 {{ n }} 笔成交（{{ rep.turnover.period }}）。只陈述你自己的交易数据。</p>
+<div class="stats">
+  <div><span class="lbl">做T次数</span><b>{{ rep.t.total.times }}</b><span class="sub">成功 {{ rep.t.total.success }} 次</span></div>
+  <div><span class="lbl">做T扣费后合计</span><b class="{{ rep.t.total.net_total|signed }}">{{ rep.t.total.net_total|money }}</b><span class="sub">手续费 {{ rep.t.total.fees|money }}</span></div>
+  <div><span class="lbl">年化换手</span><b>{{ rep.turnover.annual_turnover }} 倍</b><span class="sub">费用占总资产 {{ rep.turnover.fees_pct_assets|pct(2) }}</span></div>
+  <div><span class="lbl">追涨买入占比</span><b>{{ rep.chase.ratio|pct if rep.chase.ratio is not none else '—' }}</b><span class="sub">{{ rep.chase.chased }}/{{ rep.chase.with_data }} 笔</span></div>
+</div>
+<section class="card"><h3>赚了就跑、亏了死扛？</h3>
+  <p><b>{{ rep.disposition.verdict }}</b></p>
+  <p class="sub">盈利卖出 {{ rep.disposition.win_sells }} 笔（平均持有 {{ rep.disposition.win_hold_days }} 天），亏损卖出 {{ rep.disposition.loss_sells }} 笔（平均持有 {{ rep.disposition.loss_hold_days }} 天）。</p>
+  {% if rep.disposition.open_losers %}<p class="sub">目前仍在扛的亏损仓位：{% for x in rep.disposition.open_losers %}{{ x.code }} 已 {{ x.days }} 天（{{ x.loss_pct|pct }}）{% if not loop.last %}、{% endif %}{% endfor %}</p>{% endif %}
+</section>
+<section class="card"><h3>做T成绩单（按股票）</h3>
+<div class="table-wrap"><table class="tbl"><thead><tr><th>股票</th><th>次数</th><th>成功</th><th>扣费后合计</th><th>建议</th></tr></thead><tbody>
+{% for s in rep.t.by_code %}<tr><td>{{ s.name or s.code }}</td><td>{{ s.times }}</td><td>{{ s.success }}</td><td class="{{ s.net_total|signed }}">{{ s.net_total|money }}</td><td>{% if s.auto_stop %}<span class="tag tag-bad">默认停做</span>{% else %}—{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% if rep.gaps %}<section class="blk gaps"><h4>数据缺口</h4><ul>{% for g in rep.gaps %}<li>{{ g }}</li>{% endfor %}</ul></section>{% endif %}
+{% endif %}
+{% endblock %}

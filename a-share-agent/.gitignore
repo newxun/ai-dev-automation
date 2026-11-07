@@ -1,0 +1,13 @@
+# 本地数据：配置（含 API Key）、数据库、考卷报告、证书，一律不入库
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+config.json
+tls-*.pem
+.env
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}确认导入 · A股导师{% endblock %}
+{% block content %}
+<h1>逐行确认{% if p.kind == 'trades' %}成交{% else %}持仓{% endif %}</h1>
+<p class="sub">来源：{{ p.filename }}。识别不对的直接改，不要的勾「删」。</p>
+{% if p.dropped or p.hits %}
+<div class="privacy-note">🔒 已去掉敏感列：{{ p.dropped|join('、') or '无' }}；遮盖敏感信息 {{ p.hits }} 处。这些内容不会保存，也不会发给模型。</div>
+{% endif %}
+{% for w in p.warnings %}<div class="flash warn">{{ w }}</div>{% endfor %}
+
+<form method="post" action="/import/confirm/{{ token }}" class="card form">
+  <input type="hidden" name="n" value="{{ p.rows|length }}">
+  <div class="table-wrap">
+  {% if p.kind == 'holdings' %}
+  <table class="tbl edit">
+    <thead><tr><th>代码</th><th>名称</th><th>持仓数量</th><th>可用</th><th>成本价</th><th>删</th></tr></thead>
+    <tbody>
+    {% for r in p.rows %}
+    <tr>
+      <td><input name="code_{{ loop.index0 }}" value="{{ r.code or '' }}" size="7"></td>
+      <td><input name="name_{{ loop.index0 }}" value="{{ r.name or '' }}" size="6"></td>
+      <td><input name="quantity_{{ loop.index0 }}" value="{{ r.quantity|int if r.quantity else '' }}" inputmode="numeric" size="6"></td>
+      <td><input name="available_{{ loop.index0 }}" value="{{ r.available if r.available is not none else '' }}" inputmode="numeric" size="6"></td>
+      <td><input name="cost_price_{{ loop.index0 }}" value="{{ r.cost_price if r.cost_price is not none else '' }}" inputmode="decimal" size="6"></td>
+      <td><input type="checkbox" name="del_{{ loop.index0 }}"></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <table class="tbl edit">
+    <thead><tr><th>日期</th><th>时间</th><th>股票</th><th>方向</th><th>数量</th><th>价格</th><th>费用</th><th>删</th></tr></thead>
+    <tbody>
+    {% for r in p.rows %}
+    <tr>
+      <td>{{ r.trade_date }}</td><td>{{ r.trade_time[:5] }}</td><td>{{ r.name }}<div class="sub">{{ r.code }}</div></td>
+      <td><select name="side_{{ loop.index0 }}"><option value="buy" {% if r.side == 'buy' %}selected{% endif %}>买入</option><option value="sell" {% if r.side == 'sell' %}selected{% endif %}>卖出</option></select></td>
+      <td><input name="quantity_{{ loop.index0 }}" value="{{ r.quantity }}" inputmode="numeric" size="5"></td>
+      <td><input name="price_{{ loop.index0 }}" value="{{ r.price }}" inputmode="decimal" size="6"></td>
+      <td>{{ '%.2f'|format((r.commission or 0) + (r.stamp_tax or 0) + (r.transfer_fee or 0) + (r.other_fee or 0)) }}{% if r.fee_estimated %}<div class="sub">按费率估算</div>{% endif %}</td>
+      <td><input type="checkbox" name="del_{{ loop.index0 }}"></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  </div>
+  {% if p.kind == 'holdings' %}
+  <div class="form-row">
+    <label>持仓日期 <input type="date" name="as_of" value="{{ as_of }}"></label>
+    <label>可用资金（元） <input name="cash" inputmode="decimal" value="{{ cash if cash is not none else '' }}" placeholder="用于算总资产和仓位"></label>
+  </div>
+  {% else %}
+  <label class="check"><input type="checkbox" name="update_positions" value="1" {% if has_positions %}checked{% endif %}> 用这些成交更新持仓（按成交日之后的成交推算数量和成本）</label>
+  {% endif %}
+  <button class="btn primary">确认保存</button>
+</form>
+
+{% if p.ocr_text is defined and p.ocr_text %}
+<section class="card">
+  <h3>识别得不对？</h3>
+  <details><summary>本机识别出的文字（已脱敏）</summary><pre class="pre">{{ p.ocr_text }}</pre></details>
+  <form method="post" action="/import/ocr-llm/{{ token }}" class="js-busy"><button class="btn">让模型整理这些文字（只发送上面的脱敏文字）</button></form>
+  {% if p.masked_png %}
+  <h4>还不行：用视觉模型看图</h4>
+  <p class="sub">下面是自动打码后的图片。请确认里面没有姓名、账号等个人信息，才会发送。</p>
+  <img class="masked" src="data:image/png;base64,{{ p.masked_png }}" alt="打码后的截图">
+  <form method="post" action="/import/vision/{{ token }}" class="js-busy">
+    <label class="check"><input type="checkbox" name="confirm" value="yes"> 我确认打码后的图片里没有个人信息</label>
+    <button class="btn ghost">发给视觉模型识别</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

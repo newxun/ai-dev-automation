@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}初始设置 · A股导师{% endblock %}
+{% block bodyclass %}auth{% endblock %}
+{% block nav %}{% endblock %}
+{% block bottomnav %}{% endblock %}
+{% block content %}
+<form method="post" action="/setup" class="card auth-card">
+  <h1>欢迎使用 A股导师</h1>
+  <p class="sub">先设一个访问密码。手机通过局域网访问时需要它；密码只以加密摘要的形式保存在这台电脑上。</p>
+  <input type="password" name="password" placeholder="访问密码（至少 6 位）" required minlength="6" autocomplete="new-password">
+  <input type="password" name="password2" placeholder="再输一次" required minlength="6" autocomplete="new-password">
+  <button class="btn primary block">设置密码</button>
+</form>
+{% endblock %}

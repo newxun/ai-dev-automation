@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}交易前 · A股导师{% endblock %}
+{% block content %}
+<h1>交易前，先和导师过一遍</h1>
+<p class="sub">导师不帮你选股。你说想做什么、为什么，程序先查规则和冷静关卡，导师再审，最后落成计划卡。</p>
+<form class="card form" method="get" action="/pretrade">
+  <div class="form-row">
+    <label>股票代码 <input name="code" value="{{ code }}" placeholder="如 300059" required inputmode="numeric"></label>
+    <label>方向 <select name="side"><option value="buy" {% if side == 'buy' %}selected{% endif %}>买入</option><option value="sell" {% if side == 'sell' %}selected{% endif %}>卖出</option></select></label>
+    <button class="btn">先检查</button>
+  </div>
+</form>
+
+{% if chk %}
+<section class="card">
+  <h3>{{ chk.name }}（{{ chk.code }}）</h3>
+  {% if chk.blocks %}<div class="flash bad">{{ chk.blocks|join('；') }}</div>{% endif %}
+  {% if chk.summary %}<p class="sub">今收 {{ chk.summary.close }}，今日 {{ chk.summary.pct_chg|pct(2) }}，近 5 日 {{ chk.summary.chg_5d|pct }}，趋势：{{ chk.summary.trend.state }}{% if chk.holding %}；你持有 {{ chk.holding.qty }} 股，浮盈亏 {{ chk.holding.pnl_pct|pct }}{% endif %}</p>{% endif %}
+  {% if chk.gates %}
+  <div class="gate">
+    <h4>⛔ 冷静关卡</h4>
+    <ul>{% for g in chk.gates %}<li>{{ g.message }}</li>{% endfor %}</ul>
+    <p>如果还要做，请写下至少 10 个字：<b>为什么现在必须做？</b></p>
+  </div>
+  {% else %}<div class="flash ok">没有触发冷静关卡。</div>{% endif %}
+  {% if not chk.blocks %}
+  <form method="post" action="/pretrade" class="form js-busy">
+    <input type="hidden" name="code" value="{{ chk.code }}"><input type="hidden" name="side" value="{{ side }}">
+    <label>你的理由 <textarea name="reason" rows="2" required placeholder="为什么想{{ '买' if side == 'buy' else '卖' }}？依据是什么？"></textarea></label>
+    {% if chk.gates %}<label>为什么现在必须做 <textarea name="gate_reason" rows="2" minlength="10" required></textarea></label>{% endif %}
+    <div class="form-row">
+      <label>计划价格（可空，默认今收） <input name="price" inputmode="decimal"></label>
+      {% if side == 'buy' %}<label>止损价（可空） <input name="stop" inputmode="decimal"></label>{% endif %}
+      <label>想买/卖多少股（可空） <input name="qty" inputmode="numeric"></label>
+    </div>
+    <button class="btn primary">请导师审一下</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

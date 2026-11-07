@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% from "_card.html" import card_summary, full %}
+{% block title %}今天 · A股导师{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <div class="sub">最近收盘 {{ as_of }} · 下一个交易日 {{ next_day }}</div>
+    <h1>{% if review %}{{ '今天已复盘' if trading_today else '已复盘 ' ~ as_of[5:] }}{% elif not trading_today %}今天休市，复盘 {{ as_of[5:] }} 的交易{% elif now.hour < 15 %}收盘后再来复盘{% else %}晚上好，来复盘今天{% endif %}</h1>
+  </div>
+  <div class="status-row">
+    <span class="chip {% if prepared %}ok{% endif %}">{% if prepared %}收盘数据已备好 {{ prepared.prepared_at[11:] }}{% else %}收盘数据 {{ cfg.review_prepare_time }} 自动准备{% endif %}</span>
+    <span class="chip {% if meta %}ok{% else %}bad{% endif %}">{% if meta %}持仓更新到 {{ meta.as_of }}{% else %}还没有持仓{% endif %}</span>
+  </div>
+</section>
+
+{% if not meta %}
+<section class="card callout">
+  <h3>第一步：告诉导师你持有什么</h3>
+  <p>导出券商的持仓表（CSV/Excel）、上传截图，或者手动录入几行。账号、姓名等信息会在导入时去掉。</p>
+  <a class="btn primary" href="/import">导入持仓</a>
+</section>
+{% else %}
+
+<div class="grid2">
+<section>
+  <h3 class="sec">今晚三步</h3>
+  <ol class="steps">
+    <li class="{% if today_trades or no_trades %}done{% endif %}">
+      <div><b>确认今天的成交</b>
+        <div class="sub">{% if today_trades %}已导入 {{ today_trades|length }} 笔：{% for t in today_trades[:3] %}{{ t.name or t.code }}{{ '买' if t.side == 'buy' else '卖' }}{{ t.quantity }}{% if not loop.last %}、{% endif %}{% endfor %}{% elif no_trades %}今天没有成交{% else %}导入交割单/当日成交，或手动录入{% endif %}</div>
+      </div>
+      <div class="step-act">
+        <a class="btn sm" href="/import?kind=trades">导入成交</a>
+        {% if not today_trades and not no_trades %}<form method="post" action="/trades/none" class="inline"><button class="btn sm ghost">今天没交易</button></form>{% endif %}
+      </div>
+    </li>
+    <li class="{% if review %}done{% endif %}">
+      <div><b>导师复盘今天</b><div class="sub">逐笔标记计划内/计划外，对账昨天的预案</div></div>
+      <div class="step-act"><form method="post" action="/run/review" class="inline js-busy"><button class="btn sm primary">{% if review %}重新复盘{% else %}生成复盘{% endif %}</button></form></div>
+    </li>
+    <li class="{% if tplans %}done{% endif %}">
+      <div><b>看明天的做T预案</b><div class="sub">复盘时一起生成；不满足条件的票会直接写「明天不做」</div></div>
+      <div class="step-act"><form method="post" action="/run/tplans" class="inline js-busy"><button class="btn sm">只更新预案</button></form></div>
+    </li>
+  </ol>
+
+  {% if review %}
+  <h3 class="sec">今日复盘</h3>
+  {{ card_summary(review) }}
+  {% endif %}
+
+  {% if due %}
+  <h3 class="sec">到期待复查</h3>
+  {% for c in due %}{{ card_summary(c) }}{% endfor %}
+  {% endif %}
+</section>
+
+<section>
+  <h3 class="sec">明日（{{ next_day }}）做T预案</h3>
+  {% if tplans %}
+    {% set doing = tplans|selectattr('status', 'equalto', 'open')|list %}
+    <p class="sub">{{ doing|length }} 只可以做，{{ tplans|length - doing|length }} 只明天不做。</p>
+    {% for c in tplans|sort(attribute='status') %}{{ card_summary(c) }}{% endfor %}
+  {% else %}
+    <p class="sub empty">还没有预案。先完成上面的复盘。</p>
+  {% endif %}
+
+  {% if today_t %}
+  <h3 class="sec">今天（{{ as_of }}）的预案执行情况</h3>
+  {% for c in today_t %}{{ card_summary(c) }}{% endfor %}
+  {% endif %}
+
+  <h3 class="sec">持仓体检</h3>
+  {% if health %}{{ card_summary(health) }}{% else %}<p class="sub empty">还没做过体检。</p>{% endif %}
+  <form method="post" action="/run/health" class="js-busy"><button class="btn">做一次持仓体检</button></form>
+  <p class="sub" style="margin-top:12px">想买/卖之前，先 <a href="/pretrade">和导师过一遍</a>；看看你的 <a href="/report">交割单体检</a>。</p>
+</section>
+</div>
+{% endif %}
+{% endblock %}

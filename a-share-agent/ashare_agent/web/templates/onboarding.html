@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}认识一下 · A股导师{% endblock %}
+{% block content %}
+<h1>先让导师认识你（3 分钟）</h1>
+<p class="sub">导师会按你的情况说话：上班族不会给你盯盘才能执行的建议；你常犯的错误，导师会重点盯。最后生成几条<b>硬规则</b>，程序会强制执行。</p>
+{% set pr = cfg.profile %}{% set r = cfg.rules %}
+<form method="post" action="/onboarding" class="card form interview">
+  <label>投入股市的资金大概是
+    <select name="capital_range">{% for o in ["10万以内", "10-30万", "30-50万", "50-100万", "100万以上"] %}<option {% if pr.capital_range == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <label>炒股多久了
+    <select name="experience_years">{% for o in ["不到1年", "1-3年", "3-5年", "5年以上"] %}<option {% if pr.experience_years == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <label>整体最多能接受亏多少（从高点回撤）
+    <select name="max_drawdown">{% for o in ["5%", "10%", "20%", "30%"] %}<option {% if pr.max_drawdown == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <label>一般拿多久
+    <select name="holding_period">{% for o in ["几天", "几周到几个月", "半年以上"] %}<option {% if pr.holding_period == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <label>白天能看盘吗
+    <select name="can_watch">{% for o in ["上班族，只能午休和收盘后看盘", "偶尔能看几眼", "全职，可以盯盘"] %}<option {% if pr.can_watch == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <label>做T的经验
+    <select name="t_experience">{% for o in ["没做过", "做过几次", "做过十几次，有赚有亏", "经常做"] %}<option {% if pr.t_experience == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  <fieldset><legend>你最常犯的错（可多选）</legend>
+    {% for o in ["追涨", "亏了不肯卖", "赚一点就跑", "亏完马上想扳回来", "满仓一只", "频繁交易", "听消息买"] %}
+    <label class="check"><input type="checkbox" name="mistakes" value="{{ o }}" {% if o in pr.mistakes %}checked{% endif %}> {{ o }}</label>
+    {% endfor %}
+    <input name="mistakes_other" placeholder="其它">
+  </fieldset>
+  <label>你最想要的结果 <input name="goal" value="{{ pr.goal }}" placeholder="比如：稳住本金，慢慢把成本降下来"></label>
+
+  <h3>硬规则（程序强制执行，导师不能违反）</h3>
+  <div class="form-row">
+    <label>单只股票最多占总资产（%） <input name="max_position_pct" value="{{ (r.max_position_pct * 100)|round|int }}" inputmode="numeric"></label>
+    <label>做T最多用底仓的（%） <input name="t_max_ratio" value="{{ (r.t_max_ratio * 100)|round(1) }}" inputmode="decimal"></label>
+  </div>
+  <label class="check"><input type="checkbox" name="allow_st" {% if r.allow_st %}checked{% endif %}> 允许碰 ST 股</label>
+  <label class="check"><input type="checkbox" name="allow_bj" {% if r.allow_bj %}checked{% endif %}> 允许碰北交所</label>
+  <label>你自己的规则（每行一条，最多 5 条）
+    <textarea name="custom" rows="4" placeholder="比如：不在开盘半小时内追涨&#10;单只亏损超过 15% 必须做去留决策">{{ r.custom|join('\n') }}</textarea></label>
+  <p class="sub">单笔最坏亏损上限会按你能接受的回撤自动设置（5%→1%，10%→1.5%，20%→2%，30%→3%），之后可在设置里改。</p>
+  <button class="btn primary">保存，下一步配置模型</button>
+</form>
+{% endblock %}

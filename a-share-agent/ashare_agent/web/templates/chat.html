@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}问导师 · A股导师{% endblock %}
+{% block content %}
+<div class="chat-layout">
+  <aside class="chat-list">
+    <a class="btn sm" href="/chat">＋ 新对话</a>
+    {% for ch in chats %}<a href="/chat/{{ ch.id }}" class="{% if chat and chat.id == ch.id %}on{% endif %}">{{ ch.title }}<span class="sub">{{ ch.created_at[5:16] }}</span></a>{% endfor %}
+  </aside>
+  <section class="chat-main">
+    {% if card %}<div class="chat-ctx">正在追问：<a href="/card/{{ card.id }}">{{ card.title }}</a></div>{% endif %}
+    {% if not messages %}
+    <div class="chat-empty">
+      <h2>问导师</h2>
+      <p class="sub">导师能看到你的持仓、规则和历史卡片；数字都由程序计算，查不到的会直说。涉及操作的回答会落成卡片。</p>
+      <div class="suggest">
+        {% for q in ["我的持仓里哪只最该处理？", "北方稀土明天做T要注意什么？", "我最近的交易有什么坏习惯？", "300059 要不要加仓？"] %}
+        <button type="button" class="btn sm ghost js-suggest">{{ q }}</button>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="msgs">
+      {% for msg in messages %}
+      <div class="msg {{ msg.role }}">
+        <div class="bubble">{{ msg.content }}</div>
+        {% if msg.meta and msg.meta.tools %}<div class="sub tools">查了：{{ msg.meta.tools|join('、') }}</div>{% endif %}
+        {% if msg.meta and msg.meta.cards %}<div class="sub">{% for cid in msg.meta.cards %}<a href="/card/{{ cid }}">查看导师落的卡片 #{{ cid }}</a> {% endfor %}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <div id="end"></div>
+    </div>
+    <form method="post" action="/chat" class="chat-input js-busy">
+      {% if chat %}<input type="hidden" name="chat_id" value="{{ chat.id }}">{% endif %}
+      {% if card and not chat %}<input type="hidden" name="card_id" value="{{ card.id }}">{% endif %}
+      <textarea name="question" rows="2" placeholder="比如：东方财富我该不该止损？" required></textarea>
+      <button class="btn primary">发送</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
